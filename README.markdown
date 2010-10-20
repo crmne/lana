@@ -3,6 +3,11 @@ MPSNA
 
 Massively Parallel Social Network Analysis
 
+Compile
+-------
+
+    cd build && cmake .. && make
+
 License
 -------
 
