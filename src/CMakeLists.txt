@@ -9,8 +9,13 @@ find_package(Boost 1.35 REQUIRED COMPONENTS
     system
 )
 
-link_directories(${Boost_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
+link_directories(
+	${Boost_LIBRARY_DIRS}
+)
+include_directories(
+	${Boost_INCLUDE_DIRS}
+	${MPI_INCLUDE_PATH}
+)
 
 add_library(csv csv.cpp)
 
