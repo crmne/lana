@@ -13,11 +13,7 @@ using boost::graph::distributed::mpi_process_group;
 
 struct Person {
     Person() {}
-    Person(const std::string& name) : name(name)
-    {
-        in_degree = NULL;
-        out_degree = NULL;
-    }
+    Person(const std::string& name) : name(name) {}
 
     std::string name;
     unsigned int in_degree, out_degree;
