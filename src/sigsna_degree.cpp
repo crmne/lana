@@ -85,11 +85,13 @@ int main (int argc, char *argv[])
 {
     mpi::environment env(argc, argv);
     mpi::communicator world;
-    std::cout << "Process " << world.rank() << " of " << world.size() << " reporting for duty." << std::endl;
+    std::cerr << "Process " << world.rank() << " of " << world.size() << " reporting for duty." << std::endl;
 
     if(argc < 2)
     {
-        std::cerr << "What CSV file do you want me to load?" << std::endl;
+        if (world.rank() == 0) {
+            std::cerr << "What CSV file do you want me to load?" << std::endl;
+        }
         return EXIT_FAILURE;
     }
 
@@ -100,14 +102,13 @@ int main (int argc, char *argv[])
 
     // Load the graph from SIGSNA's CSV
     if (process_id(g.process_group()) == 0) {
-        std::cout << "Process 0 here, sir! Loading the graph... ";
-        std::cout.flush();
+        std::cerr << "Process 0 here, sir! Loading the graph... ";
 
         std::ifstream file(argv[1]);
         CSV csv(file);
         sigsna::load_graph_from_csv(csv, g);
 
-        std::cout << "done" << std::endl;
+        std::cerr << "done" << std::endl;
     }
     synchronize(g.process_group());
 
