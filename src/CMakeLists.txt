@@ -1,6 +1,21 @@
-find_package(Boost 1.35 COMPONENTS graph REQUIRED)
-link_directories(${Boost_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
+# search for an MPI distribution
+find_package(MPI REQUIRED)
+
+# search for the Parallel Boost Graph Library and its dependencies
+find_package(Boost 1.35 REQUIRED COMPONENTS
+    graph_parallel
+    mpi
+    serialization
+    system
+)
+
+link_directories(
+	${Boost_LIBRARY_DIRS}
+)
+include_directories(
+	${Boost_INCLUDE_DIRS}
+	${MPI_INCLUDE_PATH}
+)
 
 add_library(csv csv.cpp)
 
@@ -12,4 +27,5 @@ target_link_libraries(
 	sigsna_degree
 	csv
 	${Boost_LIBRARIES}
+	${MPI_LIBRARIES}
 )
