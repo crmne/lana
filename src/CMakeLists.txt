@@ -11,22 +11,22 @@ find_package(Boost 1.35 REQUIRED COMPONENTS
 )
 
 link_directories(
-	${Boost_LIBRARY_DIRS}
+    ${Boost_LIBRARY_DIRS}
 )
 include_directories(
-	${Boost_INCLUDE_DIRS}
-	${MPI_INCLUDE_PATH}
+    ${Boost_INCLUDE_DIRS}
+    ${MPI_INCLUDE_PATH}
 )
 
 add_library(csv csv.cpp)
 
 add_executable(
     mpsna
-	cli.cpp
+    cli.cpp
 )
 target_link_libraries(
     mpsna
-	csv
-	${Boost_LIBRARIES}
-	${MPI_LIBRARIES}
+    csv
+    ${Boost_LIBRARIES}
+    ${MPI_LIBRARIES}
 )

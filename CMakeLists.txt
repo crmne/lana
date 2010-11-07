@@ -4,9 +4,7 @@ project(mpsna CXX)
 cmake_minimum_required(VERSION 2.6)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
-set(CMAKE_MODULE_PATH
-  ${CMAKE_SOURCE_DIR}/cmake/Modules
-)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # add definitions
 include(DefineCMakeDefaults)
@@ -20,6 +18,6 @@ macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source buil
 add_subdirectory(src)
 
 if(WITH_TESTING)
-	enable_testing()
-	add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
