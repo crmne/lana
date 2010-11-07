@@ -1,6 +1,6 @@
 #include "csv.hpp"
 
-CSV::CSV (std::istream &in) : input(in) {}
+CSV::CSV(std::istream &in) : input(in) {}
 
 // Reads the next row and puts it in the buffer
 std::vector<std::string> CSV::nextRow()
@@ -12,9 +12,9 @@ std::vector<std::string> CSV::nextRow()
     std::stringstream line_stream(line);
     std::string cell;
 
-    while(std::getline(line_stream, cell, ','))
-    {
+    while (std::getline(line_stream, cell, ',')) {
         result.push_back(cell);
     }
+
     return result;
 }

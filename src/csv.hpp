@@ -10,7 +10,7 @@
 class CSV
 {
 public:
-    CSV (std::istream &in);
+    CSV(std::istream &in);
     std::vector<std::string> nextRow();
 
 private:

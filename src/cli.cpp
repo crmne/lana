@@ -1,0 +1,98 @@
+#include <boost/program_options.hpp>
+
+#include <boost/graph/use_mpi.hpp>
+#include <boost/graph/distributed/graphviz.hpp>
+
+#include <iostream>
+#include <iterator>
+#include <vector>
+
+#include "social_graph.hpp"
+#include "degree_centrality.hpp"
+#include "graph_loaders.hpp"
+
+namespace po = boost::program_options;
+
+void usage(po::options_description &desc)
+{
+    std::cout << "Usage: mpsna [options] filename" << std::endl << desc;
+}
+
+int main(int argc, char *argv[])
+{
+    bool verbose;
+    std::string ofile, ifile, iformat, oformat;
+
+    // CLI options
+    po::options_description desc("Allowed options");
+    desc.add_options()
+    ("help", "print this message")
+    ("output,o", po::value(&ofile), "save output to file")
+    ("input-file", po::value(&ifile), "read input from file")
+    ("input-format,f", po::value(&iformat), "input format")
+    ("verbose,v", po::bool_switch(&verbose), "print informations on the performed action")
+    ;
+
+    // first command line token with no name: input-file
+    po::positional_options_description p;
+    p.add("input-file", -1);
+
+    mpi::environment env(argc, argv);
+    mpi::communicator world;
+
+    Graph g;
+    VertexNameMap name_map = get(&Person::name, g);
+    VertexInDegreeMap in_degree_map = get(&Person::in_degree, g);
+    VertexOutDegreeMap out_degree_map = get(&Person::out_degree, g);
+
+    unsigned int procid = process_id(g.process_group());
+
+    std::istream *input;
+    std::ostream *output;
+
+    try {
+        po::variables_map vm;
+        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+        po::notify(vm);
+
+        if (vm.count("help")) {
+            if (procid == 0) {
+                usage(desc);
+            }
+        }
+
+        if (vm.count("output")) {
+            output = new std::ofstream(ofile.c_str());
+        } else {
+            output = &std::cout;
+        }
+
+        if (procid == 0) {
+            if (vm.count("input-file")) {
+                input = new std::ifstream(ifile.c_str());
+
+            } else {
+                input = &std::cin;
+            }
+
+            sigsna::load_graph_from_csv(*input, g);
+        }
+
+
+    } catch (std::exception& e) {
+        if (procid == 0) {
+            std::cout << "Error: " << e.what() << std::endl;
+            usage(desc);
+        }
+
+        return 1;
+    }
+
+    synchronize(g.process_group());
+
+    degree_centrality(g, in_degree_map, out_degree_map);
+
+    write_graphviz(*output, g, make_nd_label_writer(name_map, in_degree_map, out_degree_map));
+
+    return 0;
+}
