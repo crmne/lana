@@ -7,6 +7,7 @@ find_package(Boost 1.35 REQUIRED COMPONENTS
     mpi
     serialization
     system
+    program_options
 )
 
 link_directories(
@@ -20,11 +21,11 @@ include_directories(
 add_library(csv csv.cpp)
 
 add_executable(
-	sigsna_degree
-	sigsna_degree.cpp
+    mpsna
+	cli.cpp
 )
 target_link_libraries(
-	sigsna_degree
+    mpsna
 	csv
 	${Boost_LIBRARIES}
 	${MPI_LIBRARIES}
