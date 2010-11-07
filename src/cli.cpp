@@ -23,19 +23,33 @@ int main(int argc, char *argv[])
     bool verbose;
     std::string ofile, ifile, iformat, oformat;
 
-    // CLI options
-    po::options_description desc("Allowed options");
-    desc.add_options()
-    ("help", "print this message")
-    ("output,o", po::value(&ofile), "save output to file")
-    ("input-file", po::value(&ifile), "read input from file")
-    ("input-format,f", po::value(&iformat), "input format")
-    ("verbose,v", po::bool_switch(&verbose), "print informations on the performed action")
+    // Option definition
+    po::options_description generic_opts("Generic options");
+    generic_opts.add_options()
+    ("help,h", "print this message")
+    ("verbose,v", po::bool_switch(&verbose), "print some info while processing")
     ;
+
+    po::options_description io_opts("Input/Output options");
+    io_opts.add_options()
+    ("output,o", po::value(&ofile), "save output to file 'arg'")
+    ("input-format,f", po::value(&iformat), "treat input as [csv|dot|metis|gml]")
+    ;
+
+    po::options_description hidden_opts("Hidden options");
+    hidden_opts.add_options()
+    ("input-file", po::value(&ifile), "input file");
 
     // first command line token with no name: input-file
     po::positional_options_description p;
     p.add("input-file", -1);
+
+    po::options_description cmdline_opts;
+    cmdline_opts.add(generic_opts).add(io_opts).add(hidden_opts);
+
+    po::options_description visible_opts;
+    visible_opts.add(generic_opts).add(io_opts);
+    // end of option definition
 
     mpi::environment env(argc, argv);
     mpi::communicator world;
@@ -52,13 +66,15 @@ int main(int argc, char *argv[])
 
     try {
         po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+        po::store(po::command_line_parser(argc, argv).options(visible_opts).positional(p).run(), vm);
         po::notify(vm);
 
         if (vm.count("help")) {
             if (procid == 0) {
-                usage(desc);
+                usage(visible_opts);
             }
+
+            return 0;
         }
 
         if (vm.count("output")) {
@@ -82,7 +98,7 @@ int main(int argc, char *argv[])
     } catch (std::exception& e) {
         if (procid == 0) {
             std::cout << "Error: " << e.what() << std::endl;
-            usage(desc);
+            usage(visible_opts);
         }
 
         return 1;
