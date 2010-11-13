@@ -1,8 +1,5 @@
 find_package(Boost 1.35 COMPONENTS unit_test_framework REQUIRED)
-link_directories(
-    ${Boost_LIBRARY_DIRS}
-    ${LIBRARY_OUTPUT_PATH}
-)
+
 include_directories(
     ${Boost_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
