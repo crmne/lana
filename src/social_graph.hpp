@@ -21,18 +21,19 @@ struct Person {
 // Enable named vertex support
 namespace boost
 {
-namespace graph
-{
-template<>
-struct internal_vertex_name<Person> {
-    typedef multi_index::member<Person, std::string, &Person::name> type;
-};
-template<>
-struct internal_vertex_constructor<Person> {
-    typedef vertex_from_name<Person> type;
-};
-} // end of namespace graph
-} // end of namespace boost
+    namespace graph
+    {
+        template<>
+        struct internal_vertex_name<Person> {
+            typedef multi_index::member<Person, std::string, &Person::name> type;
+        };
+
+        template<>
+        struct internal_vertex_constructor<Person> {
+            typedef vertex_from_name<Person> type;
+        };
+    }
+}
 
 // Declare the graph type and vertex and edge types
 typedef adjacency_list <vecS, distributedS<boost::graph::distributed::mpi_process_group, vecS>, bidirectionalS, Person> Graph;
@@ -57,6 +58,7 @@ private:
     InDegree in_degree;
     OutDegree out_degree;
 };
+
 template <class Name, class InDegree, class OutDegree>
 inline nd_label_writer<Name, InDegree, OutDegree>
 make_nd_label_writer(Name n, InDegree i, OutDegree o)
