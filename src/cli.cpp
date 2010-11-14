@@ -9,6 +9,7 @@
 
 #include "social_graph.hpp"
 #include "degree_centrality.hpp"
+#include "node_strength.hpp"
 #include "graph_loaders.hpp"
 
 namespace po = boost::program_options;
@@ -22,6 +23,21 @@ int main(int argc, char *argv[])
 {
     bool verbose;
     std::string ofile, ifile, iformat, oformat;
+    std::istream *input;
+    std::ostream *output;
+
+    mpi::environment env(argc, argv);
+    mpi::communicator world;
+
+    Graph g;
+    VertexNameMap name_map = get(&Person::name, g);
+    VertexUIntMap popularity_map = get(&Person::in_degree, g);
+    VertexUIntMap gregariousness_map = get(&Person::out_degree, g);
+    VertexUIntMap prestige_map = get(&Person::in_strength, g);
+    VertexUIntMap activity_map = get(&Person::out_strength, g);
+    EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
+
+    bool is_root_proc = (process_id(g.process_group()) == 0);
 
     // Option definition
     po::options_description generic_opts("Generic options");
@@ -51,26 +67,13 @@ int main(int argc, char *argv[])
     visible_opts.add(generic_opts).add(io_opts);
     // end of option definition
 
-    mpi::environment env(argc, argv);
-    mpi::communicator world;
-
-    Graph g;
-    VertexNameMap name_map = get(&Person::name, g);
-    VertexInDegreeMap in_degree_map = get(&Person::in_degree, g);
-    VertexOutDegreeMap out_degree_map = get(&Person::out_degree, g);
-
-    unsigned int procid = process_id(g.process_group());
-
-    std::istream *input;
-    std::ostream *output;
-
     try {
         po::variables_map vm;
         po::store(po::command_line_parser(argc, argv).options(cmdline_opts).positional(p).run(), vm);
         po::notify(vm);
 
         if (vm.count("help")) {
-            if (procid == 0) {
+            if (is_root_proc) {
                 usage(visible_opts);
             }
 
@@ -79,11 +82,12 @@ int main(int argc, char *argv[])
 
         if (vm.count("output")) {
             output = new std::ofstream(ofile.c_str());
+
         } else {
             output = &std::cout;
         }
 
-        if (procid == 0) {
+        if (is_root_proc) {
             if (vm.count("input-file")) {
                 input = new std::ifstream(ifile.c_str());
 
@@ -94,9 +98,8 @@ int main(int argc, char *argv[])
             sigsna::load_graph_from_csv(*input, g);
         }
 
-
     } catch (std::exception& e) {
-        if (procid == 0) {
+        if (is_root_proc) {
             std::cout << "Error: " << e.what() << std::endl;
             usage(visible_opts);
         }
@@ -106,9 +109,12 @@ int main(int argc, char *argv[])
 
     synchronize(g.process_group());
 
-    degree_centrality(g, in_degree_map, out_degree_map);
+    all_popularity_values(g, popularity_map);
+    all_gregariousness_values(g, gregariousness_map);
+    all_prestige_values(g, prestige_map, edge_weight_map);
+    all_activity_values(g, activity_map, edge_weight_map);
 
-    write_graphviz(*output, g, make_nd_label_writer(name_map, in_degree_map, out_degree_map));
+    write_graphviz(*output, g, make_all_measures_writer(name_map, popularity_map, gregariousness_map, prestige_map, activity_map));
 
     return 0;
 }
