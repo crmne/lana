@@ -1,3 +1,7 @@
+#pragma once
+#ifndef SOCIAL_GRAPH_HPP_M6Y1UN4Z
+#define SOCIAL_GRAPH_HPP_M6Y1UN4Z
+
 #include <boost/mpi/communicator.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
@@ -80,3 +84,5 @@ make_all_measures_writer(Name n, InDegree i, OutDegree o, InStrength s, OutStren
 {
     return all_measures_writer<Name, InDegree, OutDegree, InStrength, OutStrength>(n, i, o, s, ss);
 }
+
+#endif /* end of include guard: SOCIAL_GRAPH_HPP_M6Y1UN4Z */
