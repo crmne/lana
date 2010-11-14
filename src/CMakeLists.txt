@@ -2,7 +2,7 @@
 find_package(MPI REQUIRED)
 
 # search for the Parallel Boost Graph Library and its dependencies
-find_package(Boost 1.35 REQUIRED COMPONENTS
+find_package(Boost 1.42 REQUIRED COMPONENTS
     graph_parallel
     mpi
     serialization
