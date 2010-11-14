@@ -121,8 +121,8 @@ inline void all_node_strengths(const Graph& g, CentralityMap cent)
     all_node_strengths(g, cent, measure_activity(g));
 }
 
-// More helper functions for computing gregariousness and popularity.
-// I hate the names of these functions, but gregariousness and popularity
+// More helper functions for computing activity and prestige.
+// I hate the names of these functions, but activity and prestige
 // don't pluralize too well.
 
 template <typename Graph, typename CentralityMap, typename EdgeWeightMap>

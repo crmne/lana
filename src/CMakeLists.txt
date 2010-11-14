@@ -16,17 +16,17 @@ include_directories(
 )
 
 add_library(
-	csv
-	csv.cpp
-	csv.hpp # headers are useful with IDEs, and ignored by the Makefile generator
+    csv
+    csv.cpp
+    csv.hpp # headers are useful with IDEs, and ignored by the Makefile generator
 )
 
 add_executable(
     mpsna
     cli.cpp
-	degree_centrality.hpp
-	graph_loaders.hpp
-	social_graph.hpp
+    degree_centrality.hpp
+    graph_loaders.hpp
+    social_graph.hpp
 )
 target_link_libraries(
     mpsna

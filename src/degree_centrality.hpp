@@ -86,7 +86,7 @@ template <typename Graph, typename CentralityMap, typename Measure>
 inline void
 all_degree_centralities(const Graph& g, CentralityMap cent, Measure measure)
 {
-    // function_requires< VertexListGraphConcept<Graph> >(); TODO: why it doesn't compile with this?
+    // function_requires< VertexListGraphConcept<Graph> >(); TODO: find a suitable concept
     typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
     typedef typename graph_traits<Graph>::vertex_iterator VertexIterator;
     function_requires< WritablePropertyMapConcept<CentralityMap, Vertex> >();
