@@ -5,6 +5,8 @@
 
 #include <boost/graph/distributed/concepts.hpp>
 
+using namespace boost;
+
 template <typename Graph>
 struct degree_centrality_measure {
     typedef typename graph_traits<Graph>::degree_size_type degree_type;
