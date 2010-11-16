@@ -91,49 +91,49 @@ typedef boost::mpl::list<Bigraph> PrestigeTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllNodeStrengths, G, AllNodeStrengthTypes)
 {
-    typedef typename graph_traits<G>::edge_iterator EdgeIterator;
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 3, 2, 1, 7, 2 };
 
     GraphFixture<G> f;
 
     all_node_strengths(f.g, f.sm, f.ewm);
 
-    EdgeIterator it, end;
+    VertexIterator it, end;
 
-    for (i = 0, tie(it, end) = edges(f.g); it != end; ++i, ++it) {
-        BOOST_CHECK_EQUAL(f.ewm[*it], results[i]);
+    for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
+        BOOST_CHECK_EQUAL(f.sm[*it], results[i]);
     }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Activity, G, ActivityTypes)
 {
-    typedef typename graph_traits<G>::edge_iterator EdgeIterator;
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 3, 2, 1, 7, 2 };
 
     GraphFixture<G> f;
 
     all_activity_values(f.g, f.sm, f.ewm);
 
-    EdgeIterator it, end;
+    VertexIterator it, end;
 
-    for (i = 0, tie(it, end) = edges(f.g); it != end; ++i, ++it) {
-        BOOST_CHECK_EQUAL(f.ewm[*it], results[i]);
+    for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
+        BOOST_CHECK_EQUAL(f.sm[*it], results[i]);
     }
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Prestige, G, PrestigeTypes)
 {
-    typedef typename graph_traits<G>::edge_iterator EdgeIterator;
-    unsigned int i, results[] = { 3, 2, 1, 7, 2 };
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
+    unsigned int i, results[] = { 3, 3, 2, 0, 7 };
 
     GraphFixture<G> f;
 
     all_prestige_values(f.g, f.sm, f.ewm);
 
-    EdgeIterator it, end;
+    VertexIterator it, end;
 
-    for (i = 0, tie(it, end) = edges(f.g); it != end; ++i, ++it) {
-        BOOST_CHECK_EQUAL(f.ewm[*it], results[i]);
+    for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
+        BOOST_CHECK_EQUAL(f.sm[*it], results[i]);
     }
 }
 
