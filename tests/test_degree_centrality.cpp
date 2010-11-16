@@ -68,12 +68,14 @@ typedef boost::mpl::list<Bigraph> PopularityTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllDegreeCentralities, G, AllDegreeCentralitiesTypes)
 {
-    graph_traits<Graph>::vertex_iterator it, end;
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 3, 2, 2, 1, 2 };
 
     GraphFixture<G> f;
 
     all_degree_centralities(f.g, f.cm);
+
+    VertexIterator it, end;
 
     for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
         BOOST_CHECK_EQUAL(f.cm[*it], results[i]);
@@ -82,12 +84,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(AllDegreeCentralities, G, AllDegreeCentralitiesTyp
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Gregariousness, G, GregariousnessTypes)
 {
-    graph_traits<Graph>::vertex_iterator it, end;
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 1, 1, 1, 1, 1 };
 
     GraphFixture<G> f;
 
     all_gregariousness_values(f.g, f.cm);
+
+    VertexIterator it, end;
 
     for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
         BOOST_CHECK_EQUAL(f.cm[*it], results[i]);
@@ -96,12 +100,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Gregariousness, G, GregariousnessTypes)
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Popularity, G, PopularityTypes)
 {
-    graph_traits<Graph>::vertex_iterator it, end;
+    typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 2, 1, 1, 0, 1 };
 
     GraphFixture<G> f;
 
     all_popularity_values(f.g, f.cm);
+
+    VertexIterator it, end;
 
     for (i = 0, tie(it, end) = vertices(f.g); it != end; ++i, ++it) {
         BOOST_CHECK_EQUAL(f.cm[*it], results[i]);
