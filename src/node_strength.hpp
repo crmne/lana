@@ -4,6 +4,8 @@
 
 #include <boost/graph/distributed/concepts.hpp>
 
+using namespace boost;
+
 template <typename Graph>
 struct node_strength_measure {
     typedef typename graph_traits<Graph>::degree_size_type degree_type;
@@ -115,10 +117,10 @@ all_node_strengths(const Graph& g, CentralityMap cent, EdgeWeightMap weight, Mea
     }
 }
 
-template <typename Graph, typename CentralityMap>
-inline void all_node_strengths(const Graph& g, CentralityMap cent)
+template <typename Graph, typename CentralityMap, typename EdgeWeightMap>
+inline void all_node_strengths(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
 {
-    all_node_strengths(g, cent, measure_activity(g));
+    all_node_strengths(g, cent, weight, measure_activity(g, weight));
 }
 
 // More helper functions for computing activity and prestige.
