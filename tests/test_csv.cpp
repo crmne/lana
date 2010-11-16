@@ -9,7 +9,7 @@
 #define BOOST_TEST_MODULE CSV test
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE(read_test)
+BOOST_AUTO_TEST_CASE(ReadTest)
 {
     std::string data1[2][3];
     data1[0][0] = "1";
