@@ -1,15 +1,3 @@
-# search for an MPI distribution
-find_package(MPI REQUIRED)
-
-# search for the Parallel Boost Graph Library and its dependencies
-find_package(Boost 1.42 REQUIRED COMPONENTS
-    graph_parallel
-    mpi
-    serialization
-    system
-    program_options
-)
-
 include_directories(
     ${Boost_INCLUDE_DIRS}
     ${MPI_INCLUDE_PATH}
