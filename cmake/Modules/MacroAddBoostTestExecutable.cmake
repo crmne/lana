@@ -1,5 +1,5 @@
 # Helper for compiling and testing executables that uses our naming conventions:
-# source file     = test_${TEST_NAME}.cpp
+# source file     = ${TEST_NAME}.cpp
 # executable name = test_${TEST_NAME}
 # test name       = ${TEST_NAME}
 #
@@ -13,7 +13,7 @@
 macro(add_boost_test_executable TEST_NAME)
     add_executable(
         test_${TEST_NAME}
-        test_${TEST_NAME}.cpp
+        ${TEST_NAME}.cpp
     )
     target_link_libraries(
         test_${TEST_NAME}
@@ -26,8 +26,8 @@ macro(add_boost_test_executable TEST_NAME)
         set(BOOST_TEST_LOG_OPTIONS --log_level=all --report_level=no)
     endif()
     add_test(
-        ${TEST_NAME}
-        test_${TEST_NAME}
+        ${TEST_NAME} # name of the test
+        test_${TEST_NAME} # name of the executable
         ${BOOST_TEST_LOG_OPTIONS}
     )
     if("${ARGN}" MATCHES "${MPI_LIBRARIES}")
@@ -40,7 +40,7 @@ macro(add_boost_test_executable TEST_NAME)
             ${TEST_NAME}_parallel
             ${MPIEXEC}
             ${MPIEXEC_NUMPROC_FLAG}
-            ${MPIEXEC_NUMPROCS} # numbers of processes to use
+            ${MPIEXEC_NUMPROCS} # number of processes to use
             ${MPIEXEC_PREFLAGS}
             test_${TEST_NAME}
             ${MPIEXEC_POSTFLAGS}
