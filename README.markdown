@@ -1,7 +1,7 @@
 MPSNA
 =====
 
-MPSNA is a massively parallel, large-scale social network analyzer. Designed to run on [MPI][] clusters, MPSNA can easily scale to massive networks. This software is currently in heavy development.
+MPSNA is a massively parallel, large-scale social network analyzer. Designed to run on [MPI][] clusters, MPSNA can easily scale to massive networks. This software is currently under heavy development.
 
 Compile
 -------
@@ -28,7 +28,7 @@ Here are some of the most useful options you can pass to [CMake][], MPSNA's buil
 
 * [`CMAKE_BUILD_TYPE`](http://www.cmake.org/cmake/help/cmake-2-8-docs.html#variable:CMAKE_BUILD_TYPE)
 
-    Specifies the build type for make based generators. Possible values are empty, `Debug`, `Release`, `RelWithDebInfo` and `MinSizeRel`. Those values control the level of optimization of the resulting binaries and libraries.
+    Specifies the build type for make based generators. Possible values are empty, `Debug`, `Release`, `RelWithDebInfo` and `MinSizeRel`. These values control the level of optimization of the resulting binaries and libraries.
 
 * [`CMAKE_CXX_COMPILER`](http://www.cmake.org/cmake/help/cmake-2-8-docs.html#variable:CMAKE_LANG_COMPILER)
 
@@ -46,7 +46,7 @@ The following variables are defined by us, you cannot find them in the official 
 
 * `WITH_TESTING`
 
-    Build with unit tests. By default is disabled, set this variable to `ON` or `true` to enable it. Once tests are finished building, run:
+    Build with unit tests. By default it's disabled, set this variable to `ON` or `true` to enable it. Once tests have finished building, run:
 
         ctest
 
@@ -63,23 +63,23 @@ The following variables are defined by us, you cannot find them in the official 
 Compilation Problems
 --------------------
 
-Not all the systems use standard paths and programs, or maybe you don't have root access to install things or whatever.
+Not all systems use standard paths and programs, or maybe you don't have root access to install things or whatever.
 
 Here is a list of all the problems we encountered. Feel free to file a bug report with the problem and the solution and we'll add them here.
 
 * Boost installed in a non-standard path:
 
-        export BOOST_ROOT=/public/boost
+        export BOOST_ROOT=/path/to/boost/prefix
 
 * Non-standard compiler:
 
-        export CXX=mpCC
+        export CXX=TheCompiler
 
 * MPI installed in a non-standard path:
 
     declare this cmake variable (see above on how)
 
-        CMAKE_PREFIX_PATH=/usr/lpp/ppe.poe
+        CMAKE_PREFIX_PATH=/path/to/mpi/prefix
 
 License
 -------
