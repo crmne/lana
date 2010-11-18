@@ -14,9 +14,9 @@
 
 namespace po = boost::program_options;
 
-void usage(po::options_description &desc)
+void usage(char *execname, po::options_description &desc)
 {
-    std::cout << "Usage: mpsna [options] filename" << std::endl << desc;
+    std::cout << "Usage: " << execname << " [options] <filename>" << std::endl << desc;
 }
 
 int main(int argc, char *argv[])
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
         if (vm.count("help")) {
             if (is_root_proc) {
-                usage(visible_opts);
+                usage(argv[0], visible_opts);
             }
 
             return 0;
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     } catch (std::exception& e) {
         if (is_root_proc) {
             std::cout << "Error: " << e.what() << std::endl;
-            usage(visible_opts);
+            usage(argv[0], visible_opts);
         }
 
         return 1;
