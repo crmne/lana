@@ -13,7 +13,7 @@ struct node_strength_measure {
 };
 
 template <typename Graph, typename EdgeWeightMap>
-struct activity_measure : public node_strength_measure<Graph> {
+struct out_strength_measure : public node_strength_measure<Graph> {
     typedef node_strength_measure<Graph> base_type;
     typedef typename base_type::degree_type degree_type;
     typedef typename base_type::vertex_type vertex_type;
@@ -33,14 +33,14 @@ struct activity_measure : public node_strength_measure<Graph> {
 };
 
 template <typename Graph, typename EdgeWeightMap>
-inline activity_measure<Graph, EdgeWeightMap>
-measure_activity(const Graph&, EdgeWeightMap)
+inline out_strength_measure<Graph, EdgeWeightMap>
+measure_out_strength(const Graph&, EdgeWeightMap)
 {
-    return activity_measure<Graph, EdgeWeightMap>();
+    return out_strength_measure<Graph, EdgeWeightMap>();
 }
 
 template <typename Graph, typename EdgeWeightMap>
-struct prestige_measure : public node_strength_measure<Graph> {
+struct in_strength_measure : public node_strength_measure<Graph> {
     typedef node_strength_measure<Graph> base_type;
     typedef typename base_type::degree_type degree_type;
     typedef typename base_type::vertex_type vertex_type;
@@ -60,10 +60,10 @@ struct prestige_measure : public node_strength_measure<Graph> {
 };
 
 template <typename Graph, typename EdgeWeightMap>
-inline prestige_measure<Graph, EdgeWeightMap>
-measure_prestige(const Graph&, EdgeWeightMap)
+inline in_strength_measure<Graph, EdgeWeightMap>
+measure_in_strength(const Graph&, EdgeWeightMap)
 {
-    return prestige_measure<Graph, EdgeWeightMap>();
+    return in_strength_measure<Graph, EdgeWeightMap>();
 }
 
 template <typename Graph, typename Vertex, typename Measure, typename EdgeWeightMap>
@@ -86,16 +86,16 @@ node_strength(const Graph& g, Vertex v)
 
 template <typename Graph, typename Vertex>
 inline typename graph_traits<Graph>::degree_size_type
-activity(const Graph& g , Vertex v)
+out_strength(const Graph& g , Vertex v)
 {
-    return node_strength(g, v, measure_activity(g));
+    return node_strength(g, v, measure_out_strength(g));
 }
 
 template <typename Graph, typename Vertex>
 inline typename graph_traits<Graph>::degree_size_type
-prestige(const Graph& g , Vertex v)
+in_strength(const Graph& g , Vertex v)
 {
-    return node_strength(g, v, measure_prestige(g));
+    return node_strength(g, v, measure_in_strength(g));
 }
 
 
@@ -120,23 +120,23 @@ all_node_strengths(const Graph& g, CentralityMap cent, EdgeWeightMap weight, Mea
 template <typename Graph, typename CentralityMap, typename EdgeWeightMap>
 inline void all_node_strengths(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
 {
-    all_node_strengths(g, cent, weight, measure_activity(g, weight));
+    all_node_strengths(g, cent, weight, measure_out_strength(g, weight));
 }
 
-// More helper functions for computing activity and prestige.
-// I hate the names of these functions, but activity and prestige
+// More helper functions for computing out_strength and in_strength.
+// I hate the names of these functions, but out_strength and in_strength
 // don't pluralize too well.
 
 template <typename Graph, typename CentralityMap, typename EdgeWeightMap>
-inline void all_activity_values(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
+inline void all_out_strength_values(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
 {
-    all_node_strengths(g, cent, weight, measure_activity(g, weight));
+    all_node_strengths(g, cent, weight, measure_out_strength(g, weight));
 }
 
 template <typename Graph, typename CentralityMap, typename EdgeWeightMap>
-inline void all_prestige_values(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
+inline void all_in_strength_values(const Graph& g, CentralityMap cent, EdgeWeightMap weight)
 {
-    all_node_strengths(g, cent, weight, measure_prestige(g, weight));
+    all_node_strengths(g, cent, weight, measure_in_strength(g, weight));
 }
 
 #endif /* end of include guard: NODE_STRENGTH_HPP_YWA85RA2 */

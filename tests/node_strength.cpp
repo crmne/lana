@@ -86,8 +86,8 @@ typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node, Arc> Bigraph;
 
 typedef boost::mpl::list<Graph> AllNodeStrengthTypes;
-typedef boost::mpl::list<Digraph, Bigraph> ActivityTypes;
-typedef boost::mpl::list<Bigraph> PrestigeTypes;
+typedef boost::mpl::list<Digraph, Bigraph> OutStrengthTypes;
+typedef boost::mpl::list<Bigraph> InStrengthTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllNodeStrengths, G, AllNodeStrengthTypes)
 {
@@ -105,14 +105,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(AllNodeStrengths, G, AllNodeStrengthTypes)
     }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(Activity, G, ActivityTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(OutStrength, G, OutStrengthTypes)
 {
     typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 3, 2, 1, 7, 2 };
 
     GraphFixture<G> f;
 
-    all_activity_values(f.g, f.sm, f.ewm);
+    all_out_strength_values(f.g, f.sm, f.ewm);
 
     VertexIterator it, end;
 
@@ -121,14 +121,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Activity, G, ActivityTypes)
     }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(Prestige, G, PrestigeTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(InStrength, G, InStrengthTypes)
 {
     typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 3, 3, 2, 0, 7 };
 
     GraphFixture<G> f;
 
-    all_prestige_values(f.g, f.sm, f.ewm);
+    all_in_strength_values(f.g, f.sm, f.ewm);
 
     VertexIterator it, end;
 
