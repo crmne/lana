@@ -63,8 +63,8 @@ typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node> Bigraph;
 
 typedef boost::mpl::list<Graph> AllDegreeCentralitiesTypes;
-typedef boost::mpl::list<Digraph, Bigraph> GregariousnessTypes;
-typedef boost::mpl::list<Bigraph> PopularityTypes;
+typedef boost::mpl::list<Digraph, Bigraph> OutDegreeTypes;
+typedef boost::mpl::list<Bigraph> InDegreeTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllDegreeCentralities, G, AllDegreeCentralitiesTypes)
 {
@@ -82,14 +82,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(AllDegreeCentralities, G, AllDegreeCentralitiesTyp
     }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(Gregariousness, G, GregariousnessTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(OutDegree, G, OutDegreeTypes)
 {
     typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 1, 1, 1, 1, 1 };
 
     GraphFixture<G> f;
 
-    all_gregariousness_values(f.g, f.cm);
+    all_out_degree_values(f.g, f.cm);
 
     VertexIterator it, end;
 
@@ -98,14 +98,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Gregariousness, G, GregariousnessTypes)
     }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(Popularity, G, PopularityTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(InDegree, G, InDegreeTypes)
 {
     typedef typename graph_traits<G>::vertex_iterator VertexIterator;
     unsigned int i, results[] = { 2, 1, 1, 0, 1 };
 
     GraphFixture<G> f;
 
-    all_popularity_values(f.g, f.cm);
+    all_in_degree_values(f.g, f.cm);
 
     VertexIterator it, end;
 

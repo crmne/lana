@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 
     Graph g;
     VertexNameMap name_map = get(&Person::name, g);
-    VertexUIntMap popularity_map = get(&Person::in_degree, g);
-    VertexUIntMap gregariousness_map = get(&Person::out_degree, g);
+    VertexUIntMap in_degree_map = get(&Person::in_degree, g);
+    VertexUIntMap out_degree_map = get(&Person::out_degree, g);
     VertexUIntMap prestige_map = get(&Person::in_strength, g);
     VertexUIntMap activity_map = get(&Person::out_strength, g);
     EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
 
     synchronize(g.process_group());
 
-    all_popularity_values(g, popularity_map);
-    all_gregariousness_values(g, gregariousness_map);
+    all_in_degree_values(g, in_degree_map);
+    all_out_degree_values(g, out_degree_map);
     all_prestige_values(g, prestige_map, edge_weight_map);
     all_activity_values(g, activity_map, edge_weight_map);
 
-    write_graphviz(*output, g, make_all_measures_writer(name_map, popularity_map, gregariousness_map, prestige_map, activity_map));
+    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, prestige_map, activity_map));
 
     return 0;
 }

@@ -14,7 +14,7 @@ struct degree_centrality_measure {
 };
 
 template <typename Graph>
-struct popularity_measure : public degree_centrality_measure<Graph> {
+struct in_degree_measure : public degree_centrality_measure<Graph> {
     typedef degree_centrality_measure<Graph> base_type;
     typedef typename base_type::degree_type degree_type;
     typedef typename base_type::vertex_type vertex_type;
@@ -26,14 +26,14 @@ struct popularity_measure : public degree_centrality_measure<Graph> {
 };
 
 template <typename Graph>
-inline popularity_measure<Graph>
-measure_popularity(const Graph&)
+inline in_degree_measure<Graph>
+measure_in_degree(const Graph&)
 {
-    return popularity_measure<Graph>();
+    return in_degree_measure<Graph>();
 }
 
 template <typename Graph>
-struct gregariousness_measure : public degree_centrality_measure<Graph> {
+struct out_degree_measure : public degree_centrality_measure<Graph> {
     typedef degree_centrality_measure<Graph> base_type;
     typedef typename base_type::degree_type degree_type;
     typedef typename base_type::vertex_type vertex_type;
@@ -45,10 +45,10 @@ struct gregariousness_measure : public degree_centrality_measure<Graph> {
 };
 
 template <typename Graph>
-inline gregariousness_measure<Graph>
-measure_gregariousness(const Graph&)
+inline out_degree_measure<Graph>
+measure_out_degree(const Graph&)
 {
-    return gregariousness_measure<Graph>();
+    return out_degree_measure<Graph>();
 }
 
 template <typename Graph, typename Vertex, typename Measure>
@@ -63,7 +63,7 @@ template <typename Graph, typename Vertex>
 inline typename graph_traits<Graph>::degree_size_type
 degree_centrality(const Graph& g, Vertex v)
 {
-    return degree_centrality(g, v, measure_gregariousness(g));
+    return degree_centrality(g, v, measure_out_degree(g));
 }
 
 
@@ -71,16 +71,16 @@ degree_centrality(const Graph& g, Vertex v)
 
 template <typename Graph, typename Vertex>
 inline typename graph_traits<Graph>::degree_size_type
-gregariousness(const Graph& g, Vertex v)
+outdegree(const Graph& g, Vertex v)
 {
-    return degree_centrality(g, v, measure_gregariousness(g));
+    return degree_centrality(g, v, measure_out_degree(g));
 }
 
 template <typename Graph, typename Vertex>
 inline typename graph_traits<Graph>::degree_size_type
-popularity(const Graph& g, Vertex v)
+indegree(const Graph& g, Vertex v)
 {
-    return degree_centrality(g, v, measure_popularity(g));
+    return degree_centrality(g, v, measure_in_degree(g));
 }
 
 
@@ -105,23 +105,23 @@ all_degree_centralities(const Graph& g, CentralityMap cent, Measure measure)
 template <typename Graph, typename CentralityMap>
 inline void all_degree_centralities(const Graph& g, CentralityMap cent)
 {
-    all_degree_centralities(g, cent, measure_gregariousness(g));
+    all_degree_centralities(g, cent, measure_out_degree(g));
 }
 
-// More helper functions for computing gregariousness and popularity.
-// I hate the names of these functions, but gregariousness and popularity
+// More helper functions for computing out_degree and in_degree.
+// I hate the names of these functions, but out_degree and in_degree
 // don't pluralize too well.
 
 template <typename Graph, typename CentralityMap>
-inline void all_gregariousness_values(const Graph& g, CentralityMap cent)
+inline void all_out_degree_values(const Graph& g, CentralityMap cent)
 {
-    all_degree_centralities(g, cent, measure_gregariousness(g));
+    all_degree_centralities(g, cent, measure_out_degree(g));
 }
 
 template <typename Graph, typename CentralityMap>
-inline void all_popularity_values(const Graph& g, CentralityMap cent)
+inline void all_in_degree_values(const Graph& g, CentralityMap cent)
 {
-    all_degree_centralities(g, cent, measure_popularity(g));
+    all_degree_centralities(g, cent, measure_in_degree(g));
 }
 
 #endif /* end of include guard: DEGREE_CENTRALITY_HPP_TBVK5D16 */
