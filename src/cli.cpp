@@ -21,38 +21,30 @@ void usage(char *execname, po::options_description &desc)
 
 int main(int argc, char *argv[])
 {
-    bool verbose;
-    std::string ofile, ifile, iformat, oformat;
-    std::istream *input;
-    std::ostream *output;
-
     mpi::environment env(argc, argv);
     mpi::communicator world;
 
     Graph g;
-    VertexNameMap name_map = get(&Person::name, g);
-    VertexUIntMap in_degree_map = get(&Person::in_degree, g);
-    VertexUIntMap out_degree_map = get(&Person::out_degree, g);
-    VertexUIntMap in_strength_map = get(&Person::in_strength, g);
-    VertexUIntMap out_strength_map = get(&Person::out_strength, g);
-    EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
 
     bool is_root_proc = (process_id(g.process_group()) == 0);
 
     // Option definition
     po::options_description generic_opts("Generic options");
+    bool verbose;
     generic_opts.add_options()
     ("help,h", "print this message")
     ("verbose,v", po::bool_switch(&verbose), "print some info while processing")
     ;
 
     po::options_description io_opts("Input/Output options");
+    std::string ofile, iformat;
     io_opts.add_options()
     ("output,o", po::value(&ofile), "save output to file 'arg'")
     ("input-format,f", po::value(&iformat), "treat input as [csv|dot|metis|gml]")
     ;
 
     po::options_description hidden_opts("Hidden options");
+    std::string ifile;
     hidden_opts.add_options()
     ("input-file", po::value(&ifile), "input file");
 
@@ -66,6 +58,9 @@ int main(int argc, char *argv[])
     po::options_description visible_opts;
     visible_opts.add(generic_opts).add(io_opts);
     // end of option definition
+
+    std::istream *input;
+    std::ostream *output;
 
     try {
         po::variables_map vm;
@@ -109,11 +104,20 @@ int main(int argc, char *argv[])
 
     synchronize(g.process_group());
 
+    VertexUIntMap in_degree_map = get(&Person::in_degree, g);
     all_in_degree_values(g, in_degree_map);
+
+    VertexUIntMap out_degree_map = get(&Person::out_degree, g);
     all_out_degree_values(g, out_degree_map);
+
+    EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
+    VertexUIntMap in_strength_map = get(&Person::in_strength, g);
     all_in_strength_values(g, in_strength_map, edge_weight_map);
+
+    VertexUIntMap out_strength_map = get(&Person::out_strength, g);
     all_out_strength_values(g, out_strength_map, edge_weight_map);
 
+    VertexNameMap name_map = get(&Person::name, g);
     write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map));
 
     return 0;

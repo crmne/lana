@@ -85,9 +85,9 @@ typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, undirectedS
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Node, Arc> Digraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node, Arc> Bigraph;
 
-typedef boost::mpl::list<Graph> AllNodeStrengthTypes;
-typedef boost::mpl::list<Digraph, Bigraph> OutStrengthTypes;
-typedef boost::mpl::list<Bigraph> InStrengthTypes;
+typedef mpl::list<Graph> AllNodeStrengthTypes;
+typedef mpl::list<Digraph, Bigraph> OutStrengthTypes;
+typedef mpl::list<Bigraph> InStrengthTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllNodeStrengths, G, AllNodeStrengthTypes)
 {

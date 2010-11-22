@@ -62,9 +62,9 @@ typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, undirectedS
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Node> Digraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node> Bigraph;
 
-typedef boost::mpl::list<Graph> AllDegreeCentralitiesTypes;
-typedef boost::mpl::list<Digraph, Bigraph> OutDegreeTypes;
-typedef boost::mpl::list<Bigraph> InDegreeTypes;
+typedef mpl::list<Graph> AllDegreeCentralitiesTypes;
+typedef mpl::list<Digraph, Bigraph> OutDegreeTypes;
+typedef mpl::list<Bigraph> InDegreeTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(AllDegreeCentralities, G, AllDegreeCentralitiesTypes)
 {
