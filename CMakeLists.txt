@@ -1,4 +1,4 @@
-project(mpsna CXX)
+project(lana CXX)
 
 # Required cmake version
 cmake_minimum_required(VERSION 2.6)

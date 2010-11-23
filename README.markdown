@@ -1,12 +1,12 @@
-MPSNA
-=====
+LANA
+====
 
-MPSNA is a massively parallel, large-scale social network analyzer. Designed to run on [MPI][] clusters, MPSNA can easily scale to massive networks. This software is currently under heavy development.
+LANA is a massively parallel, **La**rge-scale **N**etwork **A**nalyzer. Designed to run on [MPI][] clusters, LANA can easily scale to massive networks. This software is currently under heavy development.
 
 Compile
 -------
 
-Go to the `mpsna` folder and run:
+Go to the `lana` folder and run:
 
     cd build && cmake .. && make
 
@@ -15,14 +15,14 @@ Run
 
 In the `build` folder run:
 
-    src/mpsna --help
+    src/lana --help
 
 That's it. However, if you want to specify compile options or have problems compiling, read on.
 
 Compile options
 ---------------
 
-Here are some of the most useful options you can pass to [CMake][], MPSNA's build system. The syntax is simple:
+Here are some of the most useful options you can pass to [CMake][], LANA's build system. The syntax is simple:
 
     cmake -D<option>=<option_value>
 
@@ -84,7 +84,7 @@ Here is a list of all the problems we encountered. Feel free to file a bug repor
 License
 -------
 
-MPSNA is released under the MIT license (see the accompanying file LICENSE.txt).
+LANA is released under the MIT license (see the accompanying file LICENSE.txt).
 
 [MPI]: http://en.wikipedia.org/wiki/Message_Passing_Interface
 [clang]: http://clang.llvm.org/

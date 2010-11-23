@@ -10,14 +10,14 @@ add_library(
 )
 
 add_executable(
-    mpsna
+    lana
     cli.cpp
     degree_centrality.hpp
     graph_loaders.hpp
     social_graph.hpp
 )
 target_link_libraries(
-    mpsna
+    lana
     csv
     ${Boost_LIBRARIES}
     ${MPI_LIBRARIES}
