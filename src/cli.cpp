@@ -2,6 +2,7 @@
 
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
+#include <boost/graph/distributed/page_rank.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -117,8 +118,11 @@ int main(int argc, char *argv[])
     VertexUIntMap out_strength_map = get(&Person::out_strength, g);
     all_out_strength_values(g, out_strength_map, edge_weight_map);
 
+    VertexFloatMap pagerank_map = get(&Person::pagerank, g);
+    page_rank(g, pagerank_map);
+
     VertexNameMap name_map = get(&Person::name, g);
-    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map));
+    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
 
     return 0;
 }
