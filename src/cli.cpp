@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     std::string ofile, iformat;
     io_opts.add_options()
     ("output,o", po::value(&ofile), "save output to file 'arg'")
-    ("input-format,f", po::value(&iformat), "treat input as [csv|dot|metis|gml]")
+    ("input-format,f", po::value(&iformat), "treat input as [csv]")
     ;
 
     po::options_description hidden_opts("Hidden options");
