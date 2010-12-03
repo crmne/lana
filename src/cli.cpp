@@ -125,7 +125,24 @@ int main(int argc, char *argv[])
     BENCHMARK(write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map)));
 
     if (verbose) {
-        benchmark::write_log(std::cerr);
+        std::ostringstream oss;
+        mpi::communicator world;
+
+        oss << "Process " << world.rank() << ":" << std::endl;
+        benchmark::write_log(oss);
+
+        // Gather and print
+        std::vector<std::string> thelog;
+
+        if (is_root_proc) {
+            mpi::gather(world, oss.str(), thelog, 0);
+
+            for (std::vector<std::string>::iterator i = thelog.begin(); i != thelog.end(); ++i) {
+                std::cerr << *i;
+            }
+        } else {
+            mpi::gather(world, oss.str(), 0);
+        }
     }
 
     return 0;
