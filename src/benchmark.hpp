@@ -1,3 +1,7 @@
+#pragma once
+#ifndef BENCHMARK_HPP_778YQPEJ
+#define BENCHMARK_HPP_778YQPEJ
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <vector>
 #include <ostream>
@@ -47,4 +51,4 @@ namespace benchmark
     };
 }
 
-
+#endif /* end of include guard: BENCHMARK_HPP_778YQPEJ */
