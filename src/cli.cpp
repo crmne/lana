@@ -124,7 +124,9 @@ int main(int argc, char *argv[])
     VertexNameMap name_map = get(&Person::name, g);
     BENCHMARK(write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map)));
 
-    benchmark::write_log(*output);
+    if (verbose) {
+        benchmark::write_log(std::cerr);
+    }
 
     return 0;
 }
