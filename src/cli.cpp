@@ -12,6 +12,7 @@
 #include "degree_centrality.hpp"
 #include "node_strength.hpp"
 #include "graph_loaders.hpp"
+#include "benchmark.hpp"
 
 namespace po = boost::program_options;
 
@@ -23,7 +24,6 @@ void usage(char *execname, po::options_description &desc)
 int main(int argc, char *argv[])
 {
     mpi::environment env(argc, argv);
-    mpi::communicator world;
 
     Graph g;
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
                 input = &std::cin;
             }
 
-            sigsna::load_graph_from_csv(*input, g);
+            BENCHMARK(sigsna::load_graph_from_csv(*input, g));
         }
 
     } catch (std::exception& e) {
@@ -106,23 +106,25 @@ int main(int argc, char *argv[])
     synchronize(g.process_group());
 
     VertexUIntMap in_degree_map = get(&Person::in_degree, g);
-    all_in_degree_values(g, in_degree_map);
+    BENCHMARK(all_in_degree_values(g, in_degree_map));
 
     VertexUIntMap out_degree_map = get(&Person::out_degree, g);
-    all_out_degree_values(g, out_degree_map);
+    BENCHMARK(all_out_degree_values(g, out_degree_map));
 
     EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
     VertexUIntMap in_strength_map = get(&Person::in_strength, g);
-    all_in_strength_values(g, in_strength_map, edge_weight_map);
+    BENCHMARK(all_in_strength_values(g, in_strength_map, edge_weight_map));
 
     VertexUIntMap out_strength_map = get(&Person::out_strength, g);
-    all_out_strength_values(g, out_strength_map, edge_weight_map);
+    BENCHMARK(all_out_strength_values(g, out_strength_map, edge_weight_map));
 
     VertexFloatMap pagerank_map = get(&Person::pagerank, g);
-    page_rank(g, pagerank_map);
+    BENCHMARK(page_rank(g, pagerank_map));
 
     VertexNameMap name_map = get(&Person::name, g);
-    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
+    BENCHMARK(write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map)));
+
+    benchmark::write_log(*output);
 
     return 0;
 }
