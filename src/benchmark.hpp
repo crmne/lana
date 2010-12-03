@@ -1,7 +1,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <vector>
 #include <ostream>
-#define BENCHMARK(exp) { benchmark_timer(#exp,__FILE__,__LINE__); (exp); }
+#define BENCHMARK(exp) { benchmark_timer t(#exp,__FILE__,__LINE__); (exp); }
 
 struct timed_event {
     std::string exp, file;
