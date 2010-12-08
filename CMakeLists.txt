@@ -30,8 +30,4 @@ find_package(Boost 1.42 REQUIRED COMPONENTS
 
 # check subdirectories
 add_subdirectory(src)
-
-if(WITH_TESTING)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
+add_subdirectory(tests)

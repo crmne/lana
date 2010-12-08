@@ -1,6 +1,6 @@
 # Helper for compiling and testing executables that uses our naming conventions:
 # source file     = ${TEST_NAME}.cpp
-# executable name = test_${TEST_NAME}
+# executable name = ${TEST_NAME}_${TEST_TYPE}
 # test name       = ${TEST_NAME}
 #
 # Arguments past the last expected one (TEST_NAME) can be used to specify other libraries to link to.
@@ -10,13 +10,13 @@
 # Other variables:
 # BOOST_TEST_LOG_OPTIONS specifies the options to pass to the test executables, see `test_* --help` for more informations.
 # MPIEXEC_NUMPROCS specifies the number of processes to run in parallel.
-macro(add_boost_test_executable TEST_NAME)
+macro(__add_boost_test_executable TEST_NAME TEST_TYPE)
     add_executable(
-        test_${TEST_NAME}
+        ${TEST_NAME}_${TEST_TYPE}
         ${TEST_NAME}.cpp
     )
     target_link_libraries(
-        test_${TEST_NAME}
+        ${TEST_NAME}_${TEST_TYPE}
         ${Boost_LIBRARIES}
         ${ARGN} # arguments past the last expected one
     )
@@ -26,8 +26,8 @@ macro(add_boost_test_executable TEST_NAME)
         set(BOOST_TEST_LOG_OPTIONS --log_level=all --report_level=no)
     endif()
     add_test(
-        ${TEST_NAME} # name of the test
-        test_${TEST_NAME} # name of the executable
+        ${TEST_NAME}_${TEST_TYPE} # name of the test
+        ${TEST_NAME}_${TEST_TYPE} # name of the executable
         ${BOOST_TEST_LOG_OPTIONS}
     )
     if("${ARGN}" MATCHES "${MPI_LIBRARIES}")
@@ -37,14 +37,22 @@ macro(add_boost_test_executable TEST_NAME)
         endif()
 
         add_test(
-            ${TEST_NAME}_parallel
+            ${TEST_NAME}_${TEST_TYPE}_parallel
             ${MPIEXEC}
             ${MPIEXEC_NUMPROC_FLAG}
             ${MPIEXEC_NUMPROCS} # number of processes to use
             ${MPIEXEC_PREFLAGS}
-            test_${TEST_NAME}
+            ${TEST_NAME}_${TEST_TYPE}
             ${MPIEXEC_POSTFLAGS}
             ${BOOST_TEST_LOG_OPTIONS} # arguments to the program
     )
     endif()
-endmacro(add_boost_test_executable)
+endmacro(__add_boost_test_executable)
+
+macro(add_boost_unit_test_executable TEST_NAME)
+  __add_boost_test_executable(${TEST_NAME} unit ${ARGN})
+endmacro(add_boost_unit_test_executable)
+
+macro(add_boost_performance_test_executable TEST_NAME)
+  __add_boost_test_executable(${TEST_NAME} performance benchmark ${ARGN})
+endmacro(add_boost_performance_test_executable)
