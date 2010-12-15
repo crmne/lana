@@ -3,31 +3,47 @@
 #define BENCHMARK_HPP_778YQPEJ
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/current_function.hpp>
 #include <vector>
-#include <ostream>
-#define BENCHMARK(exp) { benchmark::timer t(#exp,__FILE__,__LINE__); (exp); }
+#include <string>
+#define BENCHMARK(list,exp) { benchmark::timer t(list,#exp,__FILE__,__LINE__,BOOST_CURRENT_FUNCTION); (exp); }
 
 namespace benchmark
 {
     struct event {
-        std::string exp, file;
+        const bool operator<(const event &other) const;
+        friend std::ostream& operator<<(std::ostream &out, event &ev);
+
+        std::string exp, file, function;
         boost::posix_time::time_duration time;
-        unsigned int line;
+        unsigned int line, count;
     };
 
-    static std::vector<event> events;
+    class event_list
+    {
+    public:
+        friend std::ostream& operator<<(std::ostream &out, event_list &el);
+        event& max();
+        boost::posix_time::time_duration average_time();
+        void push_back(const event &ev);
+        size_t size() const;
 
-    void write_log(std::ostream &out);
+    private:
+        typedef std::vector<event> actual_list_type;
+        actual_list_type actual_list;
+    };
 
     class timer
     {
     public:
-        timer(const std::string exp, const std::string file, const unsigned int line);
+        timer(event_list *list, const std::string exp, const std::string file, const unsigned int line, const std::string function);
         virtual ~timer();
 
     private:
+        event_list *_list;
         const std::string _exp, _file;
         const unsigned int _line;
+        const std::string _function;
         boost::posix_time::ptime *start, *end;
         std::ostringstream oss;
     };
