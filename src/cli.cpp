@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
                 input = &std::cin;
             }
 
-            BENCHMARK(sigsna::load_graph_from_csv(*input, g));
+            sigsna::load_graph_from_csv(*input, g);
         }
 
     } catch (std::exception& e) {
@@ -106,44 +106,23 @@ int main(int argc, char *argv[])
     synchronize(g.process_group());
 
     VertexUIntMap in_degree_map = get(&Person::in_degree, g);
-    BENCHMARK(all_in_degree_values(g, in_degree_map));
+    all_in_degree_values(g, in_degree_map);
 
     VertexUIntMap out_degree_map = get(&Person::out_degree, g);
-    BENCHMARK(all_out_degree_values(g, out_degree_map));
+    all_out_degree_values(g, out_degree_map);
 
     EdgeUIntMap edge_weight_map = get(&Relationship::weight, g);
     VertexUIntMap in_strength_map = get(&Person::in_strength, g);
-    BENCHMARK(all_in_strength_values(g, in_strength_map, edge_weight_map));
+    all_in_strength_values(g, in_strength_map, edge_weight_map);
 
     VertexUIntMap out_strength_map = get(&Person::out_strength, g);
-    BENCHMARK(all_out_strength_values(g, out_strength_map, edge_weight_map));
+    all_out_strength_values(g, out_strength_map, edge_weight_map);
 
     VertexFloatMap pagerank_map = get(&Person::pagerank, g);
-    BENCHMARK(page_rank(g, pagerank_map));
+    page_rank(g, pagerank_map);
 
     VertexNameMap name_map = get(&Person::name, g);
-    BENCHMARK(write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map)));
-
-    if (verbose) {
-        std::ostringstream oss;
-        mpi::communicator world;
-
-        oss << "Process " << world.rank() << ":" << std::endl;
-        benchmark::write_log(oss);
-
-        // Gather and print
-        std::vector<std::string> thelog;
-
-        if (is_root_proc) {
-            mpi::gather(world, oss.str(), thelog, 0);
-
-            for (std::vector<std::string>::iterator i = thelog.begin(); i != thelog.end(); ++i) {
-                std::cerr << *i;
-            }
-        } else {
-            mpi::gather(world, oss.str(), 0);
-        }
-    }
+    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
 
     return 0;
 }
