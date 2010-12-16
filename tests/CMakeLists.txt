@@ -8,11 +8,9 @@ include_directories(
 include(MacroAddBoostTestExecutable)
 
 if(WITH_TESTING)
-    enable_testing()
     add_subdirectory(unit)
 endif()
 
 if(WITH_PERFORMANCE_TESTING)
-    enable_testing()
     add_subdirectory(performance)
 endif()
