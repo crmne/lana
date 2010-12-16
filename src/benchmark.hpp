@@ -27,6 +27,7 @@ namespace benchmark
         boost::posix_time::time_duration average_time();
         void push_back(const event &ev);
         size_t size() const;
+        const event front() const;
 
     private:
         typedef std::vector<event> actual_list_type;

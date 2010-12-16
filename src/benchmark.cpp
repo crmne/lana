@@ -32,6 +32,11 @@ namespace benchmark
         return actual_list.size();
     }
 
+    const event event_list::front() const
+    {
+        return actual_list.front();
+    }
+
     event& event_list::max()
     {
         return *std::max_element(actual_list.begin(), actual_list.end());
