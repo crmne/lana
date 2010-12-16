@@ -6,7 +6,7 @@
 #include <boost/current_function.hpp>
 #include <vector>
 #include <string>
-#define BENCHMARK(list,exp) { benchmark::timer t(list,#exp,__FILE__,__LINE__,BOOST_CURRENT_FUNCTION); (exp); }
+#define BENCHMARK(list,exp) { benchmark::timer t(&list,#exp,__FILE__,__LINE__,BOOST_CURRENT_FUNCTION); (exp); }
 
 namespace benchmark
 {
