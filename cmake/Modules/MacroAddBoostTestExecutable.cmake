@@ -1,14 +1,14 @@
 # Helper for compiling and testing executables that uses our naming conventions:
 # source file     = ${TEST_NAME}.cpp
 # executable name = ${TEST_NAME}_${TEST_TYPE}
-# test name       = ${TEST_NAME}
+# test name       = ${TEST_NAME}_${TEST_TYPE}
 #
-# Arguments past the last expected one (TEST_NAME) can be used to specify other libraries to link to.
-# If the test links to MPI_LIBRARIES a special test named ${TEST_NAME}_parallel will be generated,
+# Arguments past the last expected one (TEST_TYPE) can be used to specify other libraries to link to.
+# If the test links to MPI_LIBRARIES a special test named ${TEST_NAME}_${TEST_TYPE}_parallel will be generated,
 # that will execute in parallel.
 #
 # Other variables:
-# BOOST_TEST_LOG_OPTIONS specifies the options to pass to the test executables, see `test_* --help` for more informations.
+# BOOST_TEST_LOG_OPTIONS specifies the options to pass to the test executables, see `tests/degree_centrality_unit --help` for more informations.
 # MPIEXEC_NUMPROCS specifies the number of processes to run in parallel.
 macro(__add_boost_test_executable TEST_NAME TEST_TYPE)
     add_executable(
