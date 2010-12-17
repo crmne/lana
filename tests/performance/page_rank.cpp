@@ -1,26 +1,5 @@
-#include <vector>
-#include <iterator>
-
-#include <boost/graph/use_mpi.hpp>
-#include <boost/graph/distributed/adjacency_list.hpp>
-// #include <boost/graph/distributed/compressed_sparse_row_graph.hpp>
-#include <boost/graph/distributed/mpi_process_group.hpp>
+#include "utils.hpp"
 #include <boost/graph/distributed/page_rank.hpp>
-#include "benchmark.hpp"
-
-#include <fstream>
-#include "graph_loaders.hpp"
-
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_MODULE PageRank test
-#include <boost/test/unit_test.hpp>
-#include <boost/test/test_case_template.hpp>
-#include <boost/mpl/list.hpp>
-
-using namespace std;
-using namespace boost;
-using boost::graph::distributed::mpi_process_group;
 
 struct Node {
     Node() {}
@@ -58,7 +37,7 @@ struct GraphFixture {
     GraphFixture(): g() {
         prm = get(&Node::pagerank, g);
 
-        if (i_am_the_root_proc()) {
+        if (is_root()) {
             istream *in = new ifstream("/Users/carmine/Desktop/itnet.csv");
             sigsna::load_graph_from_csv(*in, g);
         }
@@ -66,7 +45,7 @@ struct GraphFixture {
         synchronize(g.process_group());
     }
 
-    bool i_am_the_root_proc() {
+    bool is_root() {
         return (process_id(g.process_group()) == 0);
     }
 
@@ -74,31 +53,6 @@ struct GraphFixture {
     VertexFloatMap prm;
 };
 
-template<typename T>
-T average(T result)
-{
-    T sum = 0;
-    mpi::communicator world;
-    mpi::reduce(world, result, sum, std::plus<T>(), 0);
-    return sum / world.size();
-}
-
-template<typename T>
-std::vector<T> all(T result)
-{
-    std::vector<T> results;
-    mpi::communicator world;
-    mpi::gather(world, result, results, 0);
-    return results;
-}
-
-#define DECLARE_TYPE_NAME(x) template<> const char *type_name<x>::name = #x;
-#define GET_TYPE_NAME(x) (type_name<typeof(x)>::name)
-template <typename T> class type_name
-{
-public:
-    static const char *name;
-};
 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Node> Digraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node> Bigraph;
@@ -118,34 +72,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ScalabilityTest, G, GraphTypes)
         BENCHMARK(events, page_rank(f.g, f.prm));
     }
 
-    long microseconds = events.average_time().total_microseconds();
-    boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
-    // print all results log
-    {
-        std::vector<long> all_results = all(microseconds);
-
-        if (f.i_am_the_root_proc()) {
-            cout << "# Wall clock time for each process" << endl << "# format: algorithm graph_type process time" << endl;
-            size_t j = 0;
-
-            for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
-                boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
-                cout << "PageRank " << GET_TYPE_NAME(f.g) << " " << j << " " << time << endl;
-            }
-
-            cout << endl;
-        }
-    }
-
-    // print the average
-    {
-        if (f.i_am_the_root_proc()) {
-            cout << "# Average wall clock time" << endl << "# format: algorithm graph_type average_time" << endl;
-            cout << "PageRank " << GET_TYPE_NAME(f.g) << " " << avg << endl << endl;
-        }
-    }
-
+    print_log("PageRank", GET_TYPE_NAME(f.g), events, f.is_root());
 }
+
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
 {
