@@ -60,12 +60,12 @@ void print_log(const char *algorithm, const char *graph_type, benchmark::event_l
 
         if (root) {
             cout << "# Wall clock time for each process" << endl;
-            cout << "# format: algorithm graph_type process time" << endl;
+            cout << "# format: algorithm graph_type process time microseconds" << endl;
             size_t j = 0;
 
             for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
                 boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
-                cout << algorithm << " " << graph_type << " " << j << " " << time << endl;
+                cout << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
             }
 
             cout << endl << endl;
@@ -76,8 +76,8 @@ void print_log(const char *algorithm, const char *graph_type, benchmark::event_l
     {
         if (root) {
             cout << "# Average wall clock time" << endl;
-            cout << "# format: algorithm graph_type average_time" << endl;
-            cout << algorithm << " " << graph_type << " " << avg << endl;
+            cout << "# format: algorithm graph_type average_time microseconds" << endl;
+            cout << algorithm << " " << graph_type << " " << avg << " " << avg.total_microseconds() << endl;
             cout << endl << endl;
         }
     }
