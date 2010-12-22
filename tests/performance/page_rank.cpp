@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ScalabilityTest, G, GraphTypes)
         BENCHMARK(events, page_rank(f.g, f.prm));
     }
 
-    print_log("PageRank", GET_TYPE_NAME(f.g), events, f.is_root());
+    log_average_values(std::cout, "PageRank", GET_TYPE_NAME(f.g), events, f.is_root());
 }
 
 

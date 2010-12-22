@@ -49,36 +49,50 @@ std::vector<T> gather_all(T result)
     return results;
 }
 
-void print_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
+void log_all_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
     long microseconds = events.average_time().total_microseconds();
     boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
 
     std::vector<long> all_results = gather_all(microseconds);
-    // print all results log
-    {
 
-        if (root) {
-            cout << "# Wall clock time for each process" << endl;
-            cout << "# format: algorithm graph_type process time microseconds" << endl;
-            size_t j = 0;
+    if (root) {
+        size_t j = 0;
 
-            for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
-                boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
-                cout << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
-            }
-
-            cout << endl << endl;
+        for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
+            boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
+            cout << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
         }
+
+        out << endl << endl;
     }
+}
 
-    // print the average
-    {
-        if (root) {
-            cout << "# Average wall clock time" << endl;
-            cout << "# format: algorithm graph_type nprocs average_time microseconds" << endl;
-            cout << algorithm << " " << graph_type << " " << all_results.size() << " " << avg << " " << avg.total_microseconds() << endl;
-            cout << endl << endl;
-        }
+void log_all_header(std::ostream &out, bool root)
+{
+    if (root) {
+        out << "# Wall clock time for each process" << endl;
+        out << "# format: algorithm graph_type process time microseconds" << endl;
+    }
+}
+
+void log_average_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
+{
+    long microseconds = events.average_time().total_microseconds();
+    boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
+
+    if (root) {
+        mpi::communicator world;
+        out << algorithm << " " << graph_type << " " << world.size() << " " << avg << " " << avg.total_microseconds() << endl;
+        out << endl << endl;
+    }
+}
+
+// TODO: investigate gnuplot format headers
+void log_average_header(std::ostream& out, bool root)
+{
+    if (root) {
+        out << "# Average wall clock time" << endl;
+        out << "# format: algorithm graph_type nprocs average_time microseconds" << endl;
     }
 }
