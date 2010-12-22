@@ -8,7 +8,6 @@
 #include "benchmark.hpp"
 
 #include <fstream>
-#include "graph_loaders.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
