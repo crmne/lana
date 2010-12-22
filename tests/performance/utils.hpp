@@ -60,10 +60,8 @@ void log_all_values(std::ostream& out, const char *algorithm, const char *graph_
 
         for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
             boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
-            cout << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
+            out << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
         }
-
-        out << endl << endl;
     }
 }
 
@@ -83,7 +81,6 @@ void log_average_values(std::ostream& out, const char *algorithm, const char *gr
     if (root) {
         mpi::communicator world;
         out << algorithm << " " << graph_type << " " << world.size() << " " << avg << " " << avg.total_microseconds() << endl;
-        out << endl << endl;
     }
 }
 
