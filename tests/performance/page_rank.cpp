@@ -30,7 +30,7 @@ namespace Csv
             g = new Graph();
 
             if (is_root()) {
-                ifstream in("/Users/carmine/Desktop/itnet.csv");
+                ifstream in("itnet.csv");
                 sigsna::load_graph_from_csv(in, graph());
             }
 
@@ -78,7 +78,7 @@ namespace Metis
 
     public:
         Fixture() {
-            ifstream in("/Users/carmine/Desktop/itnet.metis");
+            ifstream in("itnet.metis");
             graph::metis_reader reader(in);
             g = new Graph(reader.begin(), reader.end(), reader.num_vertices());
             prm = get(&Node::pagerank, graph());

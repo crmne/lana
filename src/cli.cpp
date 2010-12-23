@@ -3,6 +3,7 @@
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
 #include <boost/graph/distributed/page_rank.hpp>
+#include "metis_writer.hpp"
 
 #include <iostream>
 #include <iterator>
@@ -12,7 +13,6 @@
 #include "degree_centrality.hpp"
 #include "node_strength.hpp"
 #include "graph_loaders.hpp"
-#include "benchmark.hpp"
 
 namespace po = boost::program_options;
 
@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 
     VertexNameMap name_map = get(&Person::name, g);
     write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
+
+    // write_metis(*output, g);
 
     return 0;
 }
