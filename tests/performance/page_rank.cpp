@@ -3,58 +3,77 @@
 #include <boost/graph/distributed/page_rank.hpp>
 
 struct Node {
-    Node() {}
-    Node(const std::string& name) : name(name) {}
     float pagerank;
-    std::string name;
     template<typename Archiver>
     void serialize(Archiver &ar, const unsigned int) {
-        ar & name & pagerank;
+        ar & pagerank;
+    }
+};
+
+
+template <typename Graph>
+class CSVFixture
+{
+public:
+    CSVFixture() {
+    }
+    virtual ~CSVFixture() {
     }
 };
 
 template <typename Graph>
-struct GraphFixture {
+class METISFixture
+{
     typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
     typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
-    GraphFixture(): g() {
-        prm = get(&Node::pagerank, g);
+    Graph *g;
+    VertexFloatMap prm;
 
-        std::ifstream in("itnet.metis");
-        boost::graph::metis_reader reader(in);
-        Graph g(reader.begin(), reader.end(), reader.num_vertices());
-        synchronize(g.process_group());
+public:
+    METISFixture() {
+        ifstream in("/Users/carmine/Desktop/itnet.metis");
+        graph::metis_reader reader(in);
+        g = new Graph(reader.begin(), reader.end(), reader.num_vertices());
+        prm = get(&Node::pagerank, graph());
+    }
+
+    virtual ~METISFixture() {
+        delete g;
     }
 
     bool is_root() {
-        return (process_id(g.process_group()) == 0);
+        return (process_id(graph().process_group()) == 0);
     }
 
-    Graph g;
-    VertexFloatMap prm;
+    Graph& graph() {
+        return *g;
+    }
+
+    VertexFloatMap& pagerank_map() {
+        return prm;
+    }
 };
 
 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Node> Digraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Node> Bigraph;
-// typedef compressed_sparse_row_graph<directedS, Node, no_property, no_property, distributedS<mpi_process_group> > CSRDigraph;
+typedef compressed_sparse_row_graph<directedS, Node, no_property, no_property, distributedS<mpi_process_group> > CSRDigraph;
 
 DECLARE_TYPE_NAME(Digraph);
 DECLARE_TYPE_NAME(Bigraph);
+DECLARE_TYPE_NAME(CSRDigraph);
 
-typedef mpl::list<Digraph, Bigraph> GraphTypes;
+typedef mpl::list<Digraph, Bigraph> GraphTypes; // PageRank doesn't accept CSR graphs
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ScalabilityTest, G, GraphTypes)
 {
     benchmark::event_list events;
-    GraphFixture<G> f;
+    METISFixture<G> f;
 
-    for (size_t i = 0; i < 3; ++i) {
-        BENCHMARK(events, page_rank(f.g, f.prm));
-    }
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
 
-    log_average_values(std::cout, "PageRank", GET_TYPE_NAME(f.g), events, f.is_root());
+    log_average_values(std::cout, "PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 
