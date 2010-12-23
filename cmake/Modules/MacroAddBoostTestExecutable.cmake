@@ -11,10 +11,21 @@
 # BOOST_TEST_LOG_OPTIONS specifies the options to pass to the test executables, see `tests/degree_centrality_unit --help` for more informations.
 # MPIEXEC_NUMPROCS specifies the number of processes to run in parallel.
 macro(__add_boost_test_executable TEST_NAME TEST_TYPE)
-    add_executable(
-        ${TEST_NAME}_${TEST_TYPE}
-        ${TEST_NAME}.cpp
-    )
+    if(${TEST_TYPE} MATCHES performance)
+        add_executable(
+          ${TEST_NAME}_performance
+          benchmark.cpp
+          benchmark.hpp
+          ${TEST_NAME}.cpp
+          utils.hpp
+        )
+    else()
+        add_executable(
+          ${TEST_NAME}_${TEST_TYPE}
+          ${TEST_NAME}.cpp
+        )
+    endif()
+
     target_link_libraries(
         ${TEST_NAME}_${TEST_TYPE}
         ${Boost_LIBRARIES}
@@ -54,5 +65,5 @@ macro(add_boost_unit_test_executable TEST_NAME)
 endmacro(add_boost_unit_test_executable)
 
 macro(add_boost_performance_test_executable TEST_NAME)
-  __add_boost_test_executable(${TEST_NAME} performance benchmark ${ARGN})
+  __add_boost_test_executable(${TEST_NAME} performance ${ARGN})
 endmacro(add_boost_performance_test_executable)

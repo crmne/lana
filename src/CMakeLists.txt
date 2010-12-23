@@ -9,12 +9,6 @@ add_library(
     csv.hpp # headers are useful with IDEs, and ignored by the Makefile generator
 )
 
-add_library(
-    benchmark
-    benchmark.cpp
-    benchmark.hpp
-)
-
 add_executable(
     lana
     cli.cpp
@@ -26,7 +20,6 @@ add_executable(
 target_link_libraries(
     lana
     csv
-    benchmark
     ${Boost_LIBRARIES}
     ${MPI_LIBRARIES}
 )
