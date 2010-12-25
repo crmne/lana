@@ -12,5 +12,6 @@ if(WITH_TESTING)
 endif()
 
 if(WITH_PERFORMANCE_TESTING)
+    add_subdirectory(utils)
     add_subdirectory(performance)
 endif()
