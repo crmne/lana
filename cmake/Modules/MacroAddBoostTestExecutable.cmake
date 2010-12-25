@@ -18,6 +18,8 @@ macro(__add_boost_test_executable TEST_NAME TEST_TYPE)
           benchmark.hpp
           ${TEST_NAME}.cpp
           utils.hpp
+          graph.csv
+          graph.metis
         )
     else()
         add_executable(

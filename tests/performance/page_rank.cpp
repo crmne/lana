@@ -30,7 +30,7 @@ namespace Csv
             g = new Graph();
 
             if (is_root()) {
-                ifstream in("itnet.csv");
+                ifstream in("graph.csv");
                 sigsna::load_graph_from_csv(in, graph());
             }
 
@@ -78,7 +78,7 @@ namespace Metis
 
     public:
         Fixture() {
-            ifstream in("itnet.metis");
+            ifstream in("graph.metis");
             graph::metis_reader reader(in);
             g = new Graph(reader.begin(), reader.end(), reader.num_vertices());
             prm = get(&Node::pagerank, graph());
@@ -112,6 +112,7 @@ DECLARE_TYPE_NAME(MetisCSRDigraph);
 
 typedef mpl::list<MetisDigraph, MetisBigraph> MetisGraphTypes;
 
+// too bad it doesn't work
 // BOOST_AUTO_TEST_CASE_TEMPLATE(MetisScalabilityTest, G, MetisGraphTypes)
 // {
 //     benchmark::event_list events;
