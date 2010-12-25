@@ -9,7 +9,8 @@ endif()
 
 add_custom_command(
   OUTPUT graph.csv graph.metis
-  COMMAND ${CMAKE_COMMAND} -E tar xf ${PROJECT_BINARY_DIR}/graphs.tar.bz2
+  COMMAND bunzip2 -kf ${PROJECT_BINARY_DIR}/graphs.tar.bz2 # workaround CMake 2.6-patch2 bug
+  COMMAND ${CMAKE_COMMAND} -E tar xf ${PROJECT_BINARY_DIR}/graphs.tar
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   MAIN_DEPENDENCY ${PROJECT_BINARY_DIR}/graphs.tar.bz2
 )
