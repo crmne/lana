@@ -85,7 +85,7 @@ def select_less_busy_cpus(options={})
 end
 
 logger = Logger.new STDERR # allowing pipes and other cli wizardry
-options = { :logger => logger, :user => ENV['USER'], :timeout => 3 }
+options = { :logger => logger, :user => ENV['USER'], :timeout => 3, :hostfile => nil }
 
 opts = OptionParser.new do |opts|
   opts.banner = "Choose the most idle servers by number of CPUs needed.\nUsage: #{$0} [options]"
@@ -101,6 +101,9 @@ opts = OptionParser.new do |opts|
   opts.on('-u', '--user NAME', "Use this username while connecting") do |name|
     options[:user] = name
   end
+  opts.on('-H', '--hostfile NAME', "Write output hosts on this file") do |file|
+    options[:hostfile] = file
+  end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
@@ -108,15 +111,15 @@ opts = OptionParser.new do |opts|
 end
 
 opts.parse!
-unless (options[:servers] and options[:cpus])
-  puts "Error: Please specify all the required options."
-  puts
-  puts opts
-  exit 1
-end
+abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:cpus])
 
 logger.info "Requested #{options[:cpus]} cpus by #{options[:user]}"
 logger.info "Testing servers #{options[:servers].inspect}"
 logger.info "SSH timeout: #{options[:timeout]} seconds"
 
-puts select_less_busy_cpus(options).join(',')
+idlest = select_less_busy_cpus(options)
+if options[:hostfile]
+  File.open(options[:hostfile], 'w') { |file| file.write idlest.join('\n') }
+else
+  puts idlest.join(',')
+end
