@@ -5,7 +5,7 @@ require 'optparse'
 require './mpi_config'
 
 logger = Logger.new STDERR
-options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "--log-level=nothing", :same => false }
+options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "--log_level=nothing", :same => false }
 
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
@@ -35,7 +35,9 @@ abort "Error: Please specify all the required options.\n\n#{opts}" unless (optio
 
 
 projhome = "."
-datafile = File.new "#{File.basename options[:command]}.dat", 'w'
+datafile = "#{File.basename options[:command]}.dat"
+plotfile = "#{File.basename options[:command]}.png"
+data = File.open datafile, 'w'
 MPIEXEC_HOSTS_FLAG = "-H"
 
 if options[:same]
@@ -49,6 +51,18 @@ end
   realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}".gsub(/ +/, ' ')
   logger.info "Running #{realcommand}..."
   result = %x{#{realcommand}}
-  datafile << result
+  data << result
 end
+data.close
+
+logger.info "Plotting #{plotfile}..."
+
+plotcode = <<EOL
+set term png
+set output "#{plotfile}"
+plot "#{datafile}" every 2 using 3:5 with linespoints, "#{datafile}" every 2::1 using 3:5 with linespoints
+EOL
+
+IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
+logger.info "All done."
 
