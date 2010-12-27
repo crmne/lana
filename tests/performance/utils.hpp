@@ -96,7 +96,7 @@ void log_average_header(std::ostream& out, bool root)
 void write_average_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
     std::ostringstream filename;
-    filename << algorithm << "-" << graph_type << "-Average.txt"; // Why not sprintf? I hate buffer overflows.
+    filename << algorithm << "-" << graph_type << "-Average.log"; // Why not sprintf? I hate buffer overflows.
     std::ostream *of;
     mpi::communicator world;
 
@@ -123,7 +123,7 @@ void write_all_results_log(const char *algorithm, const char *graph_type, benchm
 {
     mpi::communicator world;
     std::ostringstream filename;
-    filename << algorithm << "-" << graph_type << "-" << world.size() << "Processes.txt";
+    filename << algorithm << "-" << graph_type << "-" << world.size() << "Processes.log";
     std::ostream *of;
 
     if (root) {

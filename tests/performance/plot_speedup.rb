@@ -15,7 +15,7 @@ opts = OptionParser.new do |opts|
   opts.on('-c', '--command PATH', "REQUIRED: The command to run") do |command|
     options[:command] = command
   end
-  opts.on('-d', '--datafiles X,Y,Z', Array, "REQUIRED: The datafiles to plot") do |datafiles|
+  opts.on('-d', '--datafiles X,Y,Z', Array, "Datafiles to plot") do |datafiles|
     options[:datafiles] = datafiles
   end
   opts.on('-C', '--command-options "STRING"', "Pass the quoted string to the command") do |cmdopts|
@@ -37,7 +37,7 @@ opts = OptionParser.new do |opts|
 end
 
 opts.parse!
-abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command] and options[:datafiles])
+abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command])
 
 unless options[:plotonly]
   # Defaults that aren't as frequently changed as to get an option
@@ -58,7 +58,8 @@ unless options[:plotonly]
     %x{#{realcommand}}
   end
 end
-  
+
+options[:datafiles] = Dir['./*.log'] unless options[:datafiles]
 datafile = options[:datafiles].first
 plotfile = datafile.split('-').first + ".png"
 logger.info "Plotting #{plotfile}..."
