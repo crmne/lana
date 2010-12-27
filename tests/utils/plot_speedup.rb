@@ -5,7 +5,7 @@ require 'optparse'
 require './mpi_config'
 
 logger = Logger.new STDERR
-options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false }
+options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false, :plotonly => false }
 
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
@@ -27,6 +27,9 @@ opts = OptionParser.new do |opts|
   opts.on('-S', '--same-servers', "Use always the same servers") do |same|
     options[:same] = true
   end
+  opts.on('-P', '--plot-only', "Just plots the graph and exits") do |plot|
+    options[:plotonly] = true
+  end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
@@ -36,24 +39,26 @@ end
 opts.parse!
 abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command] and options[:datafiles])
 
-# Defaults that aren't as frequently changed as to get an option
-projhome = "."
-MPIEXEC_HOSTS_FLAG = "-H"
-
-if options[:same]
-  idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}}
-end
-
-(1..options[:procs]).each do |nprocs|
-  unless options[:same]
-    idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}}
+unless options[:plotonly]
+  # Defaults that aren't as frequently changed as to get an option
+  projhome = "."
+  MPIEXEC_HOSTS_FLAG = "-H"
+  
+  if options[:same]
+    idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}}
   end
+  
+  (1..options[:procs]).each do |nprocs|
+    unless options[:same]
+      idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}}
+    end
 
-  realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}".gsub(/ +/, ' ')
-  logger.info "Running #{realcommand}..."
-  logger.info %x{#{realcommand}}
+    realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}".gsub(/ +/, ' ')
+    logger.info "Running #{realcommand}..."
+    %x{#{realcommand}}
+  end
 end
-
+  
 datafile = options[:datafiles].first
 plotfile = datafile.split('-').first + ".png"
 logger.info "Plotting #{plotfile}..."
