@@ -7,6 +7,7 @@
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include "benchmark.hpp"
 
+#include <iostream>
 #include <fstream>
 
 #define BOOST_TEST_DYN_LINK
@@ -48,7 +49,7 @@ std::vector<T> gather_all(T result)
     return results;
 }
 
-void log_all_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
+void log_all_results_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
     long microseconds = events.average_time().total_microseconds();
     boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
@@ -60,16 +61,16 @@ void log_all_values(std::ostream& out, const char *algorithm, const char *graph_
 
         for (std::vector<long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
             boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
-            out << algorithm << " " << graph_type << " " << j << " " << time << " " << *i << endl;
+            out << algorithm << " " << graph_type << " " << j << " " << time << " " << *i / 1000000.0  << endl;
         }
     }
 }
 
-void log_all_header(std::ostream &out, bool root)
+void log_all_results_header(std::ostream &out, bool root)
 {
     if (root) {
         out << "# Wall clock time for each process" << endl;
-        out << "# format: algorithm graph_type process time microseconds" << endl;
+        out << "Algorithm GraphType Process AverageTimeString AverageTimeSeconds" << endl;
     }
 }
 
@@ -80,15 +81,58 @@ void log_average_values(std::ostream& out, const char *algorithm, const char *gr
 
     if (root) {
         mpi::communicator world;
-        out << algorithm << " " << graph_type << " " << world.size() << " " << avg << " " << avg.total_microseconds() << endl;
+        out << algorithm << " " << graph_type << " " << world.size() << " " << avg << " " << avg.total_microseconds() / 1000000.0  << endl;
     }
 }
 
-// TODO: investigate gnuplot format headers
 void log_average_header(std::ostream& out, bool root)
 {
     if (root) {
         out << "# Average wall clock time" << endl;
-        out << "# format: algorithm graph_type nprocs average_time microseconds" << endl;
+        out << "Algorithm GraphType Processes AverageTimeString AverageTimeSeconds" << endl;
     }
 }
+
+void write_average_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
+{
+    std::ostringstream filename;
+    filename << algorithm << "-" << graph_type << "-Average.txt"; // Why not sprintf? I hate buffer overflows.
+    std::ostream *of;
+    mpi::communicator world;
+
+    if (world.size() == 1) {
+        if (root) {
+            of = new std::ofstream(filename.str().c_str());
+        } else {
+            of = &std::cout;
+        }
+
+        log_average_header(*of, root);
+    } else {
+        if (root) {
+            of = new std::ofstream(filename.str().c_str(), ios_base::app);
+        } else {
+            of = &std::cout;
+        }
+    }
+
+    log_average_values(*of, algorithm, graph_type, events, root);
+}
+
+void write_all_results_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
+{
+    mpi::communicator world;
+    std::ostringstream filename;
+    filename << algorithm << "-" << graph_type << "-" << world.size() << "Processes.txt";
+    std::ostream *of;
+
+    if (root) {
+        of = new std::ofstream(filename.str().c_str());
+    } else {
+        of = &std::cout;
+    }
+
+    log_all_results_header(*of, root);
+    log_all_results_values(*of, algorithm, graph_type, events, root);
+}
+
