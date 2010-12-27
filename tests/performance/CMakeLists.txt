@@ -30,3 +30,5 @@ foreach(script ${scripts})
 endforeach(script)
 
 add_performance_test_executable(page_rank csv)
+add_performance_test_executable(degree_centrality csv)
+# add_performance_test_executable(node_strength csv)

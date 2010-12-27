@@ -59,7 +59,8 @@ unless options[:plotonly]
   end
 end
 
-options[:datafiles] = Dir['./*.log'] unless options[:datafiles]
+algorithm = File.basename(options[:command]).gsub(/_performance$/, '')
+options[:datafiles] = Dir["./${algorithm}*.log"] unless options[:datafiles]
 datafile = options[:datafiles].first
 plotfile = datafile.split('-').first + ".png"
 logger.info "Plotting #{plotfile}..."

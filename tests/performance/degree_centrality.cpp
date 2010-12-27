@@ -1,7 +1,7 @@
 #include "utils.hpp"
 #include <boost/graph/metis.hpp>
 #include "graph_loaders.hpp"
-#include <boost/graph/distributed/page_rank.hpp>
+#include "degree_centrality.hpp"
 
 namespace Csv
 {
@@ -9,21 +9,21 @@ namespace Csv
         Node() {}
         Node(const std::string& name) : name(name) {}
         std::string name;
-        float pagerank;
+        unsigned int degree;
         template<typename Archiver>
         void serialize(Archiver &ar, const unsigned int) {
-            ar & name & pagerank;
+            ar & name & degree;
         }
     };
 
     template <typename Graph>
     class Fixture
     {
-        typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
+        typedef typename property_map<Graph, unsigned int Node::*>::type VertexUIntMap;
         typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
         Graph *g;
-        VertexFloatMap prm;
+        VertexUIntMap dcm;
 
     public:
         Fixture() {
@@ -34,7 +34,7 @@ namespace Csv
                 sigsna::load_graph_from_csv(in, graph());
             }
 
-            prm = get(&Node::pagerank, graph());
+            dcm = get(&Node::degree, graph());
             synchronize(process_group(graph()));
         }
 
@@ -50,8 +50,8 @@ namespace Csv
             return *g;
         }
 
-        VertexFloatMap& pagerank_map() {
-            return prm;
+        VertexUIntMap& degree_centrality_map() {
+            return dcm;
         }
     };
 }
@@ -59,10 +59,10 @@ namespace Csv
 namespace Metis
 {
     struct Node {
-        float pagerank;
+        unsigned int degree;
         template<typename Archiver>
         void serialize(Archiver &ar, const unsigned int) {
-            ar & pagerank;
+            ar & degree;
         }
     };
 
@@ -70,18 +70,18 @@ namespace Metis
     class Fixture
     {
 
-        typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
+        typedef typename property_map<Graph, unsigned int Node::*>::type VertexUIntMap;
         typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
         Graph *g;
-        VertexFloatMap prm;
+        VertexUIntMap dcm;
 
     public:
         Fixture() {
             ifstream in("graph.metis");
             graph::metis_reader reader(in);
             g = new Graph(reader.begin(), reader.end(), reader.num_vertices());
-            prm = get(&Node::pagerank, graph());
+            dcm = get(&Node::degree, graph());
         }
 
         virtual ~Fixture() {
@@ -96,8 +96,8 @@ namespace Metis
             return *g;
         }
 
-        VertexFloatMap& pagerank_map() {
-            return prm;
+        VertexUIntMap& degree_centrality_map() {
+            return dcm;
         }
     };
 
@@ -147,16 +147,41 @@ DECLARE_TYPE_NAME(CsvDigraph);
 DECLARE_TYPE_NAME(CsvBigraph);
 DECLARE_TYPE_NAME(CsvCSRDigraph);
 
-typedef mpl::list<CsvDigraph, CsvBigraph> CsvGraphTypes;
+typedef mpl::list<CsvDigraph, CsvBigraph> CsvAllDegreeGraphTypes;
+typedef mpl::list<CsvDigraph, CsvBigraph> CsvOutDegreeGraphTypes;
+typedef mpl::list<CsvBigraph> CsvInDegreeGraphTypes;
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTest, G, CsvGraphTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(CsvAllDegreeScalabilityTest, G, CsvAllDegreeGraphTypes)
 {
     benchmark::event_list events;
     Csv::Fixture<G> f;
 
-    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+    BENCHMARK(events, all_degree_centralities(f.graph(), f.degree_centrality_map()));
 
-    write_average_log(GET_TYPE_NAME(f.graph()), events, f.is_root());
+    // the first argument must start with the current filename (minus the extension)
+    write_average_log("degree_centrality_all", GET_TYPE_NAME(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphTypes)
+{
+    benchmark::event_list events;
+    Csv::Fixture<G> f;
+
+    BENCHMARK(events, all_out_degree_values(f.graph(), f.degree_centrality_map()));
+
+    // the first argument must start with the current filename (minus the extension)
+    write_average_log("degree_centrality_out", GET_TYPE_NAME(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTypes)
+{
+    benchmark::event_list events;
+    Csv::Fixture<G> f;
+
+    BENCHMARK(events, all_in_degree_values(f.graph(), f.degree_centrality_map()));
+
+    // the first argument must start with the current filename (minus the extension)
+    write_average_log("degree_centrality_in", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
