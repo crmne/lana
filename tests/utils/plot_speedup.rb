@@ -5,15 +5,18 @@ require 'optparse'
 require './mpi_config'
 
 logger = Logger.new STDERR
-options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "--log_level=nothing", :same => false }
+options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false }
 
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
   opts.on('-s', '--servers X,Y,Z', Array, "REQUIRED: Comma separated list of servers to test") do |list|
     options[:servers] = list
   end
-  opts.on('-c', '--command STRING', "REQUIRED: The command to run") do |command|
+  opts.on('-c', '--command PATH', "REQUIRED: The command to run") do |command|
     options[:command] = command
+  end
+  opts.on('-d', '--datafiles X,Y,Z', Array, "REQUIRED: The datafiles to plot") do |datafiles|
+    options[:datafiles] = datafiles
   end
   opts.on('-C', '--command-options "STRING"', "Pass the quoted string to the command") do |cmdopts|
     options[:cmdopts] = cmdopts
@@ -31,13 +34,10 @@ opts = OptionParser.new do |opts|
 end
 
 opts.parse!
-abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command])
+abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command] and options[:datafiles])
 
-
+# Defaults that aren't as frequently changed as to get an option
 projhome = "."
-datafile = "#{File.basename options[:command]}.dat"
-plotfile = "#{File.basename options[:command]}.png"
-data = File.open datafile, 'w'
 MPIEXEC_HOSTS_FLAG = "-H"
 
 if options[:same]
@@ -48,20 +48,24 @@ end
   unless options[:same]
     idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}}
   end
+
   realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}".gsub(/ +/, ' ')
   logger.info "Running #{realcommand}..."
-  result = %x{#{realcommand}}
-  data << result
+  logger.info %x{#{realcommand}}
 end
-data.close
 
+plotfile = options[:datafiles].first.split('-').first + ".png"
 logger.info "Plotting #{plotfile}..."
 
-plotcode = <<EOL
-set term png
-set output "#{plotfile}"
-plot "#{datafile}" every 2 using 3:5 with linespoints, "#{datafile}" every 2::1 using 3:5 with linespoints
-EOL
+plotcode = "set term png\n"
+plotcode << "set output '#{plotfile}'\n"
+plotcode << "plot '#{options[:datafiles].first}' using 3:5 with linespoints"
+
+options[:datafiles][1..-1].each do |datafile|
+  plotcode << ", '#{datafile}' using 3:5 with linespoints"
+end
+
+plotcode << "\n"
 
 IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
 logger.info "All done."
