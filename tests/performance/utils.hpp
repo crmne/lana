@@ -70,7 +70,7 @@ void log_all_results_header(std::ostream &out, bool root)
 {
     if (root) {
         out << "# Wall clock time for each process" << endl;
-        out << "Algorithm GraphType Process AverageTimeString AverageTimeSeconds" << endl;
+        out << "# Algorithm GraphType Process AverageTimeString AverageTimeSeconds" << endl;
     }
 }
 
@@ -89,7 +89,7 @@ void log_average_header(std::ostream& out, bool root)
 {
     if (root) {
         out << "# Average wall clock time" << endl;
-        out << "Algorithm GraphType Processes AverageTimeString AverageTimeSeconds" << endl;
+        out << "# Algorithm GraphType Processes AverageTimeString AverageTimeSeconds" << endl;
     }
 }
 

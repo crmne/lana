@@ -54,12 +54,15 @@ end
   logger.info %x{#{realcommand}}
 end
 
-plotfile = options[:datafiles].first.split('-').first + ".png"
+datafile = options[:datafiles].first
+plotfile = datafile.split('-').first + ".png"
 logger.info "Plotting #{plotfile}..."
 
 plotcode = "set term png\n"
 plotcode << "set output '#{plotfile}'\n"
-plotcode << "plot '#{options[:datafiles].first}' using 3:5 with linespoints"
+plotcode << "set xlabel 'Processes'\n"
+plotcode << "set ylabel 'Seconds'\n"
+plotcode << "plot '#{datafile}' using 3:5 with linespoints"
 
 options[:datafiles][1..-1].each do |datafile|
   plotcode << ", '#{datafile}' using 3:5 with linespoints"
