@@ -119,7 +119,7 @@ void write_average_log(const char *algorithm, const char *graph_type, benchmark:
     log_average_values(*of, algorithm, graph_type, events, root);
 
     if (root) {
-        std::cout << "Wrote " << filename << std::endl;
+        std::cout << "Wrote " << filename.str() << std::endl;
         delete of;
     }
 }
@@ -141,7 +141,7 @@ void write_all_results_log(const char *algorithm, const char *graph_type, benchm
     log_all_results_values(*of, algorithm, graph_type, events, root);
 
     if (root) {
-        std::cout << "Wrote " << filename << std::endl;
+        std::cout << "Wrote " << filename.str() << std::endl;
         delete of;
     }
 }
