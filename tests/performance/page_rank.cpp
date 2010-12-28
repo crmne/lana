@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTest, G, CsvGraphTypes)
 
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
 
-    write_average_log(GET_TYPE_NAME(f.graph()), events, f.is_root());
+    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])

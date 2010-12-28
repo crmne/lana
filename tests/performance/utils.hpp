@@ -1,7 +1,6 @@
 #include <vector>
 #include <iterator>
 
-#include <boost/filesystem.hpp>
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <boost/graph/distributed/compressed_sparse_row_graph.hpp>
@@ -118,12 +117,11 @@ void write_average_log(const char *algorithm, const char *graph_type, benchmark:
     }
 
     log_average_values(*of, algorithm, graph_type, events, root);
-}
 
-void write_average_log(const char *graph_type, benchmark::event_list &events, bool root)
-{
-    std::string algo = boost::filesystem::basename(boost::filesystem::change_extension(events.front().file, ""));
-    write_average_log(algo.c_str(), graph_type, events, root);
+    if (root) {
+        std::cout << "Wrote " << filename << std::endl;
+        delete of;
+    }
 }
 
 void write_all_results_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
@@ -141,4 +139,9 @@ void write_all_results_log(const char *algorithm, const char *graph_type, benchm
 
     log_all_results_header(*of, root);
     log_all_results_values(*of, algorithm, graph_type, events, root);
+
+    if (root) {
+        std::cout << "Wrote " << filename << std::endl;
+        delete of;
+    }
 }

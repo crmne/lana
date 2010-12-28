@@ -158,8 +158,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvAllDegreeScalabilityTest, G, CsvAllDegreeGraphT
 
     BENCHMARK(events, all_degree_centralities(f.graph(), f.degree_centrality_map()));
 
-    // the first argument must start with the current filename (minus the extension)
-    write_average_log("degree_centrality_all", GET_TYPE_NAME(f.graph()), events, f.is_root());
+    write_average_log("AllDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphTypes)
@@ -169,8 +168,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphT
 
     BENCHMARK(events, all_out_degree_values(f.graph(), f.degree_centrality_map()));
 
-    // the first argument must start with the current filename (minus the extension)
-    write_average_log("degree_centrality_out", GET_TYPE_NAME(f.graph()), events, f.is_root());
+    write_average_log("OutDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTypes)
@@ -180,8 +178,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTyp
 
     BENCHMARK(events, all_in_degree_values(f.graph(), f.degree_centrality_map()));
 
-    // the first argument must start with the current filename (minus the extension)
-    write_average_log("degree_centrality_in", GET_TYPE_NAME(f.graph()), events, f.is_root());
+    write_average_log("InDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
