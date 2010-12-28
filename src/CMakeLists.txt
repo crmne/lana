@@ -12,6 +12,7 @@ add_library(
 add_executable(
     lana
     cli.cpp
+
     degree_centrality.hpp
     graph_loaders.hpp
     social_graph.hpp

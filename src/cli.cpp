@@ -3,6 +3,7 @@
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
 #include <boost/graph/distributed/page_rank.hpp>
+#include "metis_writer.hpp"
 
 #include <iostream>
 #include <iterator>
@@ -23,7 +24,6 @@ void usage(char *execname, po::options_description &desc)
 int main(int argc, char *argv[])
 {
     mpi::environment env(argc, argv);
-    mpi::communicator world;
 
     Graph g;
 
@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 
     VertexNameMap name_map = get(&Person::name, g);
     write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
+
+    // write_metis(*output, g);
 
     return 0;
 }
