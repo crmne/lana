@@ -47,17 +47,7 @@ unless options[:plotonly]
   idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}} if options[:same]
   (1..options[:procs]).each do |nprocs|
     idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}} unless options[:same]
-    realcommand = <<EOL
-#{MPIEXEC}
-#{MPIEXEC_NUMPROC_FLAG}
-#{nprocs}
-#{MPIEXEC_PREFLAGS}
-#{MPIEXEC_HOSTS_FLAG}
-#{idlest_servers.chomp}
-#{options[:command]}
-#{MPIEXEC_POSTFLAGS}
-#{options[:cmdopts]}
-EOL
+    realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}"
     realcommand.gsub!(/ +/, ' ') # remove double spaces
     logger.info "Running #{realcommand}..."
     result = %x{#{realcommand}}
@@ -85,4 +75,3 @@ plotcode << "\n"
 
 IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
 logger.info "All done."
-
