@@ -5,11 +5,11 @@ require 'optparse'
 require './mpi_config'
 
 logger = Logger.new STDERR
-options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false, :plotonly => false }
+options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false, :plotonly => false, :datafiles => [] }
 
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
-  opts.on('-s', '--servers X,Y,Z', Array, "REQUIRED: Comma separated list of servers to test") do |list|
+  opts.on('-s', '--servers X,Y,Z', Array, "REQUIRED: Comma separated list of servers", "to test") do |list|
     options[:servers] = list
   end
   opts.on('-c', '--command PATH', "REQUIRED: The command to run") do |command|
@@ -24,10 +24,10 @@ opts = OptionParser.new do |opts|
   opts.on('-p', '--procs NUMBER', Integer, "Max number of processes (default = 5)") do |num|
     options[:procs] = num
   end
-  opts.on('-S', '--same-servers', "Use always the same servers") do |same|
+  opts.on('-S', '--same-servers', "Always use the same servers, instead", "of selecting the best servers each time") do |same|
     options[:same] = true
   end
-  opts.on('-P', '--plot-only', "Just plots the graph and exits") do |plot|
+  opts.on('-P', '--plot-only', "Just plots the graph and exits", "Doesn't require -s or -c, but", "REQUIRES -d, --datafiles") do |plot|
     options[:plotonly] = true
   end
   opts.on_tail("-h", "--help", "Show this message") do
@@ -37,33 +37,39 @@ opts = OptionParser.new do |opts|
 end
 
 opts.parse!
-abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command])
+abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command]) or (options[:plotonly] and not options[:datafiles].empty?)
 
 unless options[:plotonly]
   # Defaults that aren't as frequently changed as to get an option
   projhome = "."
   MPIEXEC_HOSTS_FLAG = "-H"
   
-  if options[:same]
-    idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}}
-  end
-  
+  idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}} if options[:same]
   (1..options[:procs]).each do |nprocs|
-    unless options[:same]
-      idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}}
-    end
-
-    realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}".gsub(/ +/, ' ')
+    idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}} unless options[:same]
+    realcommand = <<EOL
+#{MPIEXEC}
+#{MPIEXEC_NUMPROC_FLAG}
+#{nprocs}
+#{MPIEXEC_PREFLAGS}
+#{MPIEXEC_HOSTS_FLAG}
+#{idlest_servers.chomp}
+#{options[:command]}
+#{MPIEXEC_POSTFLAGS}
+#{options[:cmdopts]}
+EOL
+    realcommand.gsub!(/ +/, ' ') # remove double spaces
     logger.info "Running #{realcommand}..."
-    %x{#{realcommand}}
+    result = %x{#{realcommand}}
+    # if no datafile were specified, search .log file in the output of
+    # the process
+    options[:datafiles] += result.split.grep(/.*\.log/) if options[:datafiles].empty?
   end
 end
 
-algorithm = File.basename(options[:command]).gsub(/_performance$/, '')
-options[:datafiles] = Dir["./${algorithm}*.log"] unless options[:datafiles]
 datafile = options[:datafiles].first
 plotfile = datafile.split('-').first + ".png"
-logger.info "Plotting #{plotfile}..."
+logger.info "Plotting #{plotfile} from #{options[:datafiles].inspect}..."
 
 plotcode = "set term png\n"
 plotcode << "set output '#{plotfile}'\n"
