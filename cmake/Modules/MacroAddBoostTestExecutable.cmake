@@ -81,10 +81,6 @@ macro(add_performance_test_executable TEST_NAME)
 
   add_test(
     ${TEST_NAME}_performance
-    ./plot_speedup.rb
-    -s ${PERFORMANCE_TEST_SERVER_LIST}
-    -c ${TEST_NAME}_performance
-    -p ${${TEST_NAME}_MAX_PROCESSES}
-    ${__SAME_SERVERS_FLAG}
+    sh -c "./plot_speedup.rb -s ${PERFORMANCE_TEST_SERVER_LIST} -c ${TEST_NAME}_performance -p ${${TEST_NAME}_MAX_PROCESSES} ${__SAME_SERVERS_FLAG}"
   )
 endmacro(add_performance_test_executable)
