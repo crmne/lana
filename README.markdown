@@ -107,7 +107,7 @@ official [CMake documentation][].
 * `BOOST_TEST_LOG_OPTIONS`
 
     Specifies the options to pass to the test executables, see
-    `tests/test_degree_centrality --help` for more informations.
+    `tests/unit/degree_centrality_unit --help` for more informations.
 
 * `MPIEXEC_NUMPROCS`
 
