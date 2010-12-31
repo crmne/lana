@@ -79,7 +79,6 @@ def select_less_busy_cpus(options={})
     selected << machines.pop
   end
 
-
   logger.info "Selected: " + selected.inspect
   return selected.map { |x| x[:server] }
 end

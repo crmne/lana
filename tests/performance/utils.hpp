@@ -52,8 +52,6 @@ std::vector<T> gather_all(T result)
 void log_all_results_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
     unsigned long microseconds = events.average_time().total_microseconds();
-    boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
-
     std::vector<unsigned long> all_results = gather_all(microseconds);
 
     if (root) {
