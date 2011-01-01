@@ -51,13 +51,13 @@ std::vector<T> gather_all(T result)
 
 void log_all_results_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
-    unsigned long microseconds = events.average_time().total_microseconds();
-    std::vector<unsigned long> all_results = gather_all(microseconds);
+    unsigned long long microseconds = events.average_time().total_microseconds();
+    std::vector<unsigned long long> all_results = gather_all(microseconds);
 
     if (root) {
         size_t j = 0;
 
-        for (std::vector<unsigned long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
+        for (std::vector<unsigned long long>::iterator i = all_results.begin(); i != all_results.end(); ++i, ++j) {
             boost::posix_time::time_duration time = boost::posix_time::microseconds(*i);
             out << algorithm << " " << graph_type << " " << j << " " << time << " " << *i / 1000000.0  << endl;
         }
@@ -74,7 +74,7 @@ void log_all_results_header(std::ostream &out, bool root)
 
 void log_average_values(std::ostream& out, const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root)
 {
-    unsigned long microseconds = events.average_time().total_microseconds();
+    unsigned long long microseconds = events.average_time().total_microseconds();
     boost::posix_time::time_duration avg = boost::posix_time::microseconds(average(microseconds));
 
     if (root) {
