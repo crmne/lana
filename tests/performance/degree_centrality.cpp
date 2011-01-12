@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvAllDegreeScalabilityTest, G, CsvAllDegreeGraphT
 
     BENCHMARK(events, all_degree_centralities(f.graph(), f.degree_centrality_map()));
 
-    write_all_results_log("AllDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
+    // write_all_results_log("AllDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
     write_average_log("AllDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphT
 
     BENCHMARK(events, all_out_degree_values(f.graph(), f.degree_centrality_map()));
 
-    write_all_results_log("OutDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
+    // write_all_results_log("OutDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
     write_average_log("OutDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
@@ -180,12 +180,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTyp
 
     BENCHMARK(events, all_in_degree_values(f.graph(), f.degree_centrality_map()));
 
-    write_all_results_log("InDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
+    // write_all_results_log("InDegree", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
     write_average_log("InDegree", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
 {
+#pragma pomp inst init
     mpi::environment env(argc, argv);
     return ::boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
 }

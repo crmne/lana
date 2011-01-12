@@ -156,12 +156,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTest, G, CsvGraphTypes)
 
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
 
-    write_all_results_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
+    // write_all_results_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
 {
+#pragma pomp inst init
     mpi::environment env(argc, argv);
     return ::boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
 }
