@@ -72,7 +72,7 @@ official [CMake documentation][].
     Build with performance tests. Options and usage are the same as
     `WITH_TESTING`, but note that the two variables are independent
     from each other. At the end of the test you will find logs
-    (`*.log`) and plots (`*.png`) in the tests/performance build
+    (`*.log`) and plots (`*.png`) in the `tests/performance` build
     directory.
 
 * `PERFORMANCE_TEST_SAME_SERVERS`
