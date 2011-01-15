@@ -9,9 +9,9 @@
 #define BENCHMARK(list,exp) \
     { \
         benchmark::timer t(&list,#exp,__FILE__,__LINE__,BOOST_CURRENT_FUNCTION); \
-        _Pragma("pomp inst begin(#exp,__LINE__)") \
+        _Pragma("pomp inst begin(#exp##_##__LINE__)") \
         (exp); \
-        _Pragma("pomp inst end(#exp,__LINE__)") \
+        _Pragma("pomp inst end(#exp##_##__LINE__)") \
     }
 
 namespace benchmark
