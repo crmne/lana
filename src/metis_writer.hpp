@@ -1,3 +1,4 @@
+#include <boost/property_map/parallel/global_index_map.hpp>
 using namespace boost;
 
 template<typename Graph>
