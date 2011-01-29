@@ -30,6 +30,7 @@ namespace Csv
             g = new Graph();
 
             if (is_root()) {
+                assert(filesystem::exists("graph.csv"));
                 ifstream in("graph.csv");
                 sigsna::load_graph_from_csv(in, graph());
             }
@@ -78,6 +79,7 @@ namespace Metis
 
     public:
         Fixture() {
+            assert(filesystem::exists("graph.metis"));
             ifstream in("graph.metis");
             graph::metis_reader reader(in);
             g = new Graph(reader.begin(), reader.end(), reader.num_vertices());

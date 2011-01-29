@@ -32,6 +32,7 @@ namespace Csv
             g = new Graph();
 
             if (is_root()) {
+                assert(filesystem::exists("graph.csv"));
                 ifstream in("graph.csv");
                 sigsna::load_graph_from_csv(in, graph());
             }
@@ -79,10 +80,8 @@ namespace SmallWorld
         VertexFloatMap prm;
 
     public:
-        Fixture() {
+        Fixture(const unsigned int nodes, const unsigned int nearest, const float prob) {
             boost::minstd_rand gen;
-            const unsigned int nodes = 28250, nearest = 10;
-            const float prob = 0.05;
             g = new Graph(SWGen(gen, nodes, nearest, prob), SWGen(), nodes);
             prm = get(&Node::pagerank, graph());
         }
@@ -128,6 +127,7 @@ namespace Metis
 
     public:
         Fixture() {
+            assert(filesystem::exists("graph.metis"));
             ifstream in("graph.metis");
             graph::metis_reader reader(in);
             g = new Graph(reader.begin(), reader.end(), reader.num_vertices());
@@ -163,12 +163,23 @@ typedef mpl::list<SmallWorldDigraph, SmallWorldBigraph> SmallWorldGraphTypes; //
 BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest, G, SmallWorldGraphTypes)
 {
     benchmark::event_list events;
-    SmallWorld::Fixture<G> f;
+    SmallWorld::Fixture<G> f(28250, 10, 0.05);
 
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
 
     // write_all_results_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestBig, G, SmallWorldGraphTypes)
+{
+    benchmark::event_list events;
+    SmallWorld::Fixture<G> f(2825000, 10, 0.05);
+
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+
+    // write_all_results_log("PageRank-Big", GET_TYPE_NAME(f.graph()), events, f.is_root(), false);
+    write_average_log("PageRank-Big", GET_TYPE_NAME(f.graph()), events, f.is_root());
 }
 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Metis::Node> MetisDigraph;
