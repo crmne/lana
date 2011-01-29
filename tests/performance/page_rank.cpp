@@ -81,7 +81,7 @@ namespace SmallWorld
 
     public:
         Fixture(const unsigned int nodes, const unsigned int nearest, const float prob) {
-            boost::minstd_rand gen;
+            boost::minstd_rand gen(1); // Generate the same graph
             g = new Graph(SWGen(gen, nodes, nearest, prob), SWGen(), nodes);
             prm = get(&Node::pagerank, graph());
         }
