@@ -192,7 +192,7 @@ typedef mpl::list<ErdosRenyiDigraph, ErdosRenyiBigraph> ErdosRenyiGraphTypes;
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
-    ErdosRenyi::Fixture<G> f(28250, 0.05);
+    ErdosRenyi::Fixture<G> f(28250, 0.0005);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
 }
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest, G, ErdosRenyiGraphTypes
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
-    ErdosRenyi::Fixture<G> f(282500, 0.05);
+    ErdosRenyi::Fixture<G> f(282500, 0.00001);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
 }
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTy
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestBig, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
-    ErdosRenyi::Fixture<G> f(847500, 0.05);
+    ErdosRenyi::Fixture<G> f(847500, 0.000001);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
 }
