@@ -16,6 +16,7 @@ add_executable(
     degree_centrality.hpp
     graph_loaders.hpp
     social_graph.hpp
+    metis_writer.hpp
 )
 target_link_libraries(
     lana
