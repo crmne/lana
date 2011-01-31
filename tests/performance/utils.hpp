@@ -5,6 +5,7 @@
 #include <boost/graph/distributed/adjacency_list.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include "benchmark.hpp"
+#include "graph_utils.hpp"
 
 #include <iostream>
 #include <fstream>

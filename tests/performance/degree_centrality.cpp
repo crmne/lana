@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvAllDegreeScalabilityTest, G, CsvAllDegreeGraphT
     benchmark::event_list events;
     Csv::Fixture<G> f;
     BENCHMARK(events, all_degree_centralities(f.graph(), f.degree_centrality_map()));
-    write_average_log("AllDegree", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
+    write_average_log("AllDegree", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphTypes)
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvOutDegreeScalabilityTest, G, CsvOutDegreeGraphT
     benchmark::event_list events;
     Csv::Fixture<G> f;
     BENCHMARK(events, all_out_degree_values(f.graph(), f.degree_centrality_map()));
-    write_average_log("OutDegree", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
+    write_average_log("OutDegree", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTypes)
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvInDegreeScalabilityTest, G, CsvInDegreeGraphTyp
     benchmark::event_list events;
     Csv::Fixture<G> f;
     BENCHMARK(events, all_in_degree_values(f.graph(), f.degree_centrality_map()));
-    write_average_log("InDegree", GET_TYPE_NAME(f.graph()), num_vertices(f.graph()), num_edges(f.graph()), events, f.is_root());
+    write_average_log("InDegree", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])

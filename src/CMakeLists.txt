@@ -17,6 +17,7 @@ add_executable(
     graph_loaders.hpp
     social_graph.hpp
     metis_writer.hpp
+    graph_utils.hpp
 )
 target_link_libraries(
     lana
