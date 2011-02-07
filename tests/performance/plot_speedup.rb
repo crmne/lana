@@ -2,6 +2,7 @@
 
 require 'logger'
 require 'optparse'
+require 'active_support'
 require './mpi_config'
 
 logger = Logger.new STDERR
@@ -57,21 +58,38 @@ unless options[:plotonly]
   end
 end
 
-datafile = options[:datafiles].first
-plotfile = datafile.split('-').first + ".png"
-logger.info "Plotting #{plotfile} from #{options[:datafiles].inspect}..."
+def plot files, image, logger
+  logger.info "Plotting #{image} from #{files.inspect}..."
 
-plotcode = "set term png\n"
-plotcode << "set output '#{plotfile}'\n"
-plotcode << "set xlabel 'Processes'\n"
-plotcode << "set ylabel 'Seconds'\n"
-plotcode << "plot '#{datafile}' using 3:5 with linespoints"
+  plotcode = "set term png\n"
+  plotcode << "set output '#{image}'\n"
+  plotcode << "set xlabel 'Processes'\n"
+  plotcode << "set ylabel 'Seconds'\n"
+  plotcode << "plot '#{files.first}' using 3:5 with linespoints title '#{files.first.sub(/\.log$/,'')}'"
+  files[1..-1].each do |file|
+    plotcode << ", '#{file}' using 3:5 with linespoints title '#{file.sub(/\.log$/,'')}'"
+  end
+  plotcode << "\n"
 
-options[:datafiles][1..-1].each do |datafile|
-  plotcode << ", '#{datafile}' using 3:5 with linespoints"
+  IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
 end
 
-plotcode << "\n"
+Log = Struct.new :alg, :graph, :nodes, :edges, :file
+logs = options[:datafiles].map do |x|
+  s = x.split('-')
+  Log.new s[0], s[1], s[2].delete('n'), s[3].delete('e'), x
+end
 
-IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
+logs.group_by(&:alg).each do |algo, l|
+  l.group_by(&:graph).each do |graph, ll| # same graph, different size
+    plot(ll.map {|x| x.file}, "#{algo}-#{graph}.png", logger)
+  end
+  l.group_by(&:nodes).each do |nodes, ll| # same nodes, different graph, different edges
+    plot(ll.map {|x| x.file}, "#{algo}-n#{nodes}.png", logger)
+  end
+  l.group_by(&:edges).each do |edges, ll| # same edges, different nodes, different graph
+    plot(ll.map {|x| x.file}, "#{algo}-e#{edges}.png", logger)
+  end
+end
+
 logger.info "All done."
