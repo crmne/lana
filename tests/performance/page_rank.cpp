@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed, G, SmallWorldGraphTy
 BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestBig, G, SmallWorldGraphTypes)
 {
     benchmark::event_list events;
-    SmallWorld::Fixture<G> f(847500, 10, 0.05);
+    SmallWorld::Fixture<G> f(653646, 10, 0.05);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTy
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestBig, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
-    ErdosRenyi::Fixture<G> f(847500, 0.000001);
+    ErdosRenyi::Fixture<G> f(653646, 0.000001);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
