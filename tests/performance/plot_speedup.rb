@@ -47,7 +47,8 @@ unless options[:plotonly]
   MPIEXEC_HOSTS_FLAG = "-H"
   
   idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}} if options[:same]
-  (1..options[:procs]).each do |nprocs|
+
+  (2..options[:procs]).step(2).each do |nprocs|
     idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}} unless options[:same]
     realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}"
     realcommand.gsub!(/ +/, ' ') # remove double spaces
