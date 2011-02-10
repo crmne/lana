@@ -15,7 +15,7 @@ namespace Csv
         Node() {}
         Node(const std::string& name) : name(name) {}
         std::string name;
-        float pagerank;
+        double pagerank;
         template<typename Archiver>
         void serialize(Archiver &ar, const unsigned int) {
             ar & name & pagerank;
@@ -25,11 +25,11 @@ namespace Csv
     template <typename Graph>
     class Fixture
     {
-        typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
+        typedef typename property_map<Graph, double Node::*>::type VertexDoubleMap;
         typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
         Graph *g;
-        VertexFloatMap prm;
+        VertexDoubleMap prm;
 
     public:
         Fixture(const char* graphfile) {
@@ -57,7 +57,7 @@ namespace Csv
             return *g;
         }
 
-        VertexFloatMap& pagerank_map() {
+        VertexDoubleMap& pagerank_map() {
             return prm;
         }
     };
@@ -66,7 +66,7 @@ namespace Csv
 namespace SmallWorld
 {
     struct Node {
-        float pagerank;
+        double pagerank;
         template<typename Archiver>
         void serialize(Archiver &ar, const unsigned int) {
             ar & pagerank;
@@ -77,11 +77,11 @@ namespace SmallWorld
     class Fixture
     {
         typedef small_world_iterator<minstd_rand, Graph> SWGen;
-        typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
+        typedef typename property_map<Graph, double Node::*>::type VertexDoubleMap;
         typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
         Graph *g;
-        VertexFloatMap prm;
+        VertexDoubleMap prm;
 
     public:
         Fixture(const unsigned int nodes, const unsigned int nearest, const float prob) {
@@ -102,7 +102,7 @@ namespace SmallWorld
             return *g;
         }
 
-        VertexFloatMap& pagerank_map() {
+        VertexDoubleMap& pagerank_map() {
             return prm;
         }
     };
@@ -112,7 +112,7 @@ namespace SmallWorld
 namespace ErdosRenyi
 {
     struct Node {
-        float pagerank;
+        double pagerank;
         template<typename Archiver>
         void serialize(Archiver &ar, const unsigned int) {
             ar & pagerank;
@@ -123,11 +123,11 @@ namespace ErdosRenyi
     class Fixture
     {
         typedef erdos_renyi_iterator<minstd_rand, Graph> ERGen;
-        typedef typename property_map<Graph, float Node::*>::type VertexFloatMap;
+        typedef typename property_map<Graph, double Node::*>::type VertexDoubleMap;
         typedef typename graph_traits<Graph>::vertex_descriptor Vertex;
 
         Graph *g;
-        VertexFloatMap prm;
+        VertexDoubleMap prm;
 
     public:
         Fixture(const unsigned int nodes, const double prob) {
@@ -148,7 +148,7 @@ namespace ErdosRenyi
             return *g;
         }
 
-        VertexFloatMap& pagerank_map() {
+        VertexDoubleMap& pagerank_map() {
             return prm;
         }
     };
