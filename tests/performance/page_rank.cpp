@@ -5,6 +5,10 @@
 #include <boost/graph/erdos_renyi_generator.hpp>
 #include <boost/random/linear_congruential.hpp>
 
+#ifndef __ALGORITHM_NAME__
+#define __ALGORITHM_NAME__ "PageRank"
+#endif
+
 namespace Csv
 {
     struct Node {
@@ -163,7 +167,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest, G, SmallWorldGraphTypes
     benchmark::event_list events;
     SmallWorld::Fixture<G> f(28250, 10, 0.05);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed, G, SmallWorldGraphTypes)
@@ -171,7 +175,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed, G, SmallWorldGraphTy
     benchmark::event_list events;
     SmallWorld::Fixture<G> f(282500, 10, 0.05);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestBig, G, SmallWorldGraphTypes)
@@ -179,7 +183,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestBig, G, SmallWorldGraphTy
     benchmark::event_list events;
     SmallWorld::Fixture<G> f(653646, 10, 0.05);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, ErdosRenyi::Node> ErdosRenyiDigraph;
@@ -194,7 +198,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest, G, ErdosRenyiGraphTypes
     benchmark::event_list events;
     ErdosRenyi::Fixture<G> f(28250, 0.0005);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTypes)
@@ -202,7 +206,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTy
     benchmark::event_list events;
     ErdosRenyi::Fixture<G> f(282500, 0.00001);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestBig, G, ErdosRenyiGraphTypes)
@@ -210,7 +214,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestBig, G, ErdosRenyiGraphTy
     benchmark::event_list events;
     ErdosRenyi::Fixture<G> f(653646, 0.000001);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 // Enable named vertex support
@@ -242,7 +246,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTest, G, CsvGraphTypes)
     benchmark::event_list events;
     Csv::Fixture<G> f("graph.csv");
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTestBig, G, CsvGraphTypes)
@@ -250,7 +254,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTestBig, G, CsvGraphTypes)
     benchmark::event_list events;
     Csv::Fixture<G> f("subscriptions.csv");
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
-    write_average_log("PageRank", GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
 int BOOST_TEST_CALL_DECL main(int argc, char *argv[])
