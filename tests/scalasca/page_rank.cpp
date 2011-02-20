@@ -5,6 +5,9 @@
 #include <boost/graph/small_world_generator.hpp>
 #include <boost/random/linear_congruential.hpp>
 
+using namespace std;
+using namespace boost;
+
 namespace SmallWorld
 {
     struct Node {
