@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace boost;
+using boost::graph::distributed::mpi_process_group;
 
 namespace SmallWorld
 {
@@ -55,7 +56,6 @@ namespace SmallWorld
 };
 
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, SmallWorld::Node> SmallWorldDigraph;
-DECLARE_TYPE_NAME(SmallWorldDigraph);
 
 int main(int argc, char *argv[])
 {
