@@ -36,7 +36,6 @@ namespace Csv
             g = new Graph();
 
             if (is_root()) {
-                assert(filesystem::exists(graphfile));
                 ifstream in(graphfile);
                 sigsna::load_graph_from_csv(in, graph());
             }

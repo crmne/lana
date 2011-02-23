@@ -25,7 +25,6 @@ find_package(Boost 1.42 REQUIRED COMPONENTS
     system
     program_options
     date_time
-    filesystem
     ${BOOST_TEST_DEPENDENCIES}
 )
 

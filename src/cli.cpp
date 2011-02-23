@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
 
         if (is_root_proc) {
             if (vm.count("input-file")) {
-                assert(filesystem::exists(ifile));
                 input = new std::ifstream(ifile.c_str());
             } else {
                 input = &std::cin;
