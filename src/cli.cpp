@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/graphviz.hpp>
@@ -78,7 +79,6 @@ int main(int argc, char *argv[])
 
         if (vm.count("output")) {
             output = new std::ofstream(ofile.c_str());
-
         } else {
             output = &std::cout;
         }
@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
         if (is_root_proc) {
             if (vm.count("input-file")) {
                 input = new std::ifstream(ifile.c_str());
-
             } else {
                 input = &std::cin;
             }
@@ -122,9 +121,15 @@ int main(int argc, char *argv[])
     page_rank(g, pagerank_map);
 
     VertexNameMap name_map = get(&Person::name, g);
-    write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
+    std::string oext = filesystem::extension(ofile);
 
-    // write_metis(*output, g);
+    if (oext == ".dot" || oext == "") {
+        write_graphviz(*output, g, make_all_measures_writer(name_map, in_degree_map, out_degree_map, in_strength_map, out_strength_map, pagerank_map));
+    } else if (oext == ".metis") {
+        write_metis(*output, g);
+    } else {
+        return 1;
+    }
 
     return 0;
 }

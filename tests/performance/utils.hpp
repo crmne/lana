@@ -3,12 +3,13 @@
 
 #include <boost/graph/use_mpi.hpp>
 #include <boost/graph/distributed/adjacency_list.hpp>
-#include <boost/graph/distributed/compressed_sparse_row_graph.hpp>
 #include <boost/graph/distributed/mpi_process_group.hpp>
 #include "benchmark.hpp"
+#include "graph_utils.hpp"
 
 #include <iostream>
 #include <fstream>
+#include <boost/filesystem.hpp>
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
@@ -91,10 +92,10 @@ void log_average_header(std::ostream& out, bool root)
     }
 }
 
-void write_average_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root, bool declare = true)
+void write_average_log(const char *algorithm, const char *graph_type, const size_t nodes, const size_t edges, benchmark::event_list &events, bool root, bool declare = true)
 {
     std::ostringstream filename;
-    filename << algorithm << "-" << graph_type << "-Average.log"; // Why not sprintf? I hate buffer overflows.
+    filename << algorithm << "-" << graph_type << "-n" << nodes << "-e" << edges << "-Average.log"; // Why not sprintf? I hate buffer overflows.
     std::ostream *of;
     mpi::communicator world;
 
@@ -122,11 +123,11 @@ void write_average_log(const char *algorithm, const char *graph_type, benchmark:
     }
 }
 
-void write_all_results_log(const char *algorithm, const char *graph_type, benchmark::event_list &events, bool root, bool declare = true)
+void write_all_results_log(const char *algorithm, const char *graph_type, const size_t nodes, const size_t edges, benchmark::event_list &events, bool root, bool declare = true)
 {
     mpi::communicator world;
     std::ostringstream filename;
-    filename << algorithm << "-" << graph_type << "-" << world.size() << "Processes.log";
+    filename << algorithm << "-" << graph_type << "-n" << nodes << "-e" << edges << "-" << world.size() << "Processes.log";
     std::ostream *of;
 
     if (root) {
