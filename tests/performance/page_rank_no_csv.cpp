@@ -109,7 +109,7 @@ DECLARE_TYPE_NAME(SmallWorldBigraph);
 
 typedef mpl::list<SmallWorldDigraph, SmallWorldBigraph> SmallWorldGraphTypes; // PageRank doesn't work with CSR graphs
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest, G, SmallWorldGraphTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest1, G, SmallWorldGraphTypes)
 {
     benchmark::event_list events;
     SmallWorld::Fixture<G> f(28250, 10, 0.05);
@@ -117,10 +117,26 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest, G, SmallWorldGraphTypes
     write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed, G, SmallWorldGraphTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest2, G, SmallWorldGraphTypes)
+{
+    benchmark::event_list events;
+    SmallWorld::Fixture<G> f(28250, 100, 0.05);
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed1, G, SmallWorldGraphTypes)
 {
     benchmark::event_list events;
     SmallWorld::Fixture<G> f(282500, 10, 0.05);
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestMed2, G, SmallWorldGraphTypes)
+{
+    benchmark::event_list events;
+    SmallWorld::Fixture<G> f(282500, 100, 0.05);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
@@ -148,7 +164,7 @@ DECLARE_TYPE_NAME(ErdosRenyiBigraph);
 
 typedef mpl::list<ErdosRenyiDigraph, ErdosRenyiBigraph> ErdosRenyiGraphTypes;
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest, G, ErdosRenyiGraphTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest1, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
     ErdosRenyi::Fixture<G> f(28250, 141250);
@@ -156,10 +172,26 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest, G, ErdosRenyiGraphTypes
     write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed, G, ErdosRenyiGraphTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest2, G, ErdosRenyiGraphTypes)
+{
+    benchmark::event_list events;
+    ErdosRenyi::Fixture<G> f(28250, 1412500);
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed1, G, ErdosRenyiGraphTypes)
 {
     benchmark::event_list events;
     ErdosRenyi::Fixture<G> f(282500, 1412500);
+    BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
+    write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTestMed2, G, ErdosRenyiGraphTypes)
+{
+    benchmark::event_list events;
+    ErdosRenyi::Fixture<G> f(282500, 14125000);
     BENCHMARK(events, page_rank(f.graph(), f.pagerank_map()));
     write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
