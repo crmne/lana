@@ -4,7 +4,6 @@ require 'rubygems'
 require 'logger'
 require 'optparse'
 require 'active_support'
-require './mpi_config'
 
 logger = Logger.new STDERR
 options = { :logger => logger, :user => ENV['USER'], :procs => 5, :cmdopts => "", :same => false, :plotonly => false, :datafiles => [] }
@@ -42,6 +41,7 @@ opts.parse!
 abort "Error: Please specify all the required options.\n\n#{opts}" unless (options[:servers] and options[:command]) or (options[:plotonly] and not options[:datafiles].empty?)
 
 unless options[:plotonly]
+  require './mpi_config'
   # Defaults that aren't as frequently changed as to get an option
   projhome = "."
   MPIEXEC_HOSTS_FLAG = "-H"
@@ -60,37 +60,42 @@ unless options[:plotonly]
   end
 end
 
-def plot files, image, logger
-  logger.info "Plotting #{image} from #{files.inspect}..."
+def plot logs, image, logger
+  logger.info "Plotting #{image} from #{(logs.map {|x| x.file}).inspect}..."
 
-  plotcode = "set term png\n"
+  first = logs.first
+  plotcode = "set term pdf\n"
   plotcode << "set output '#{image}'\n"
   plotcode << "set xlabel 'Processes'\n"
   plotcode << "set ylabel 'Seconds'\n"
-  plotcode << "plot '#{files.first}' using 3:5 with linespoints title '#{files.first.sub(/\.log$/,'')}'"
-  files[1..-1].each do |file|
-    plotcode << ", '#{file}' using 3:5 with linespoints title '#{file.sub(/\.log$/,'')}'"
+  plotcode << "plot '#{first.file}' using 3:5 with linespoints title '#{first.graph}-#{first.bidi} #{first.nodes} nodes, #{first.edges} edges'"
+  logs[1..-1].each do |log|
+    plotcode << ", '#{log.file}' using 3:5 with linespoints title '#{log.graph}-#{log.bidi} #{log.nodes} nodes, #{log.edges} edges'"
   end
   plotcode << "\n"
 
   IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
 end
 
-Log = Struct.new :alg, :graph, :nodes, :edges, :file
+Log = Struct.new :alg, :graph, :bidi, :nodes, :edges, :file
 logs = options[:datafiles].map do |x|
   s = x.split('-')
-  Log.new s[0], s[1], s[2].delete('n'), s[3].delete('e'), x
+  b = s[1].gsub(/.*([DB]i)graph/, '\1')
+  e = s[3].delete('e').to_i
+  e = 27811816 if e == 28106778
+  e = 55623632 if e == 56213556
+  Log.new s[0], s[1].gsub(/[DB]igraph/,''), b, s[2].delete('n').to_i, e, x
 end
 
 logs.group_by(&:alg).each do |algo, l|
   l.group_by(&:graph).each do |graph, ll| # same graph, different size
-    plot(ll.map {|x| x.file}, "#{algo}-#{graph}.png", logger)
+    plot(ll, "#{algo}-#{graph}.pdf", logger)
   end
   l.group_by(&:nodes).each do |nodes, ll| # same nodes, different graph, different edges
-    plot(ll.map {|x| x.file}, "#{algo}-n#{nodes}.png", logger)
+    plot(ll, "#{algo}-n#{nodes}.pdf", logger)
   end
   l.group_by(&:edges).each do |edges, ll| # same edges, different nodes, different graph
-    plot(ll.map {|x| x.file}, "#{algo}-e#{edges}.png", logger)
+    plot(ll, "#{algo}-e#{edges}.pdf", logger)
   end
 end
 
