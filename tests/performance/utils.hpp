@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/filesystem.hpp>
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN

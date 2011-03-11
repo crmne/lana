@@ -87,6 +87,7 @@ namespace SmallWorld
             boost::minstd_rand gen(1); // Generate the same graph
             g = new Graph(SWGen(gen, nodes, nearest, prob), SWGen(), nodes);
             prm = get(&Node::pagerank, graph());
+            synchronize(process_group(graph()));
         }
 
         virtual ~Fixture() {
@@ -135,6 +136,7 @@ namespace ErdosRenyi
             boost::minstd_rand gen(1); // Generate the same graph
             g = new Graph(ERGen(gen, nodes, edges), ERGen(), nodes);
             prm = get(&Node::pagerank, graph());
+            synchronize(process_group(graph()));
         }
 
         virtual ~Fixture() {
