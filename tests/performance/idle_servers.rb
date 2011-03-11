@@ -2,7 +2,7 @@
 # Copyright (c) 2010 Carmine Paolino <me@iflipbits.com>
 # Distributed under the MIT License. See the accopanying file LICENSE.txt
 #
-# Choose less busy servers by number of cpus needed
+# Selects the least busy hosts by the number of CPUs needed
 
 require 'rubygems'
 begin
@@ -46,7 +46,7 @@ def connect(server, options={}, &block)
   end
 end
 
-def select_less_busy_cpus(options={})
+def select_idle_cpus(options={})
   logger = options[:logger]
   threads = []
   options[:servers].each do |server|
@@ -116,7 +116,7 @@ logger.info "Requested #{options[:cpus]} cpus by #{options[:user]}"
 logger.info "Testing servers #{options[:servers].inspect}"
 logger.info "SSH timeout: #{options[:timeout]} seconds"
 
-idlest = select_less_busy_cpus(options)
+idlest = select_idle_cpus(options)
 if options[:hostfile]
   File.open(options[:hostfile], 'w') { |file| file.write idlest.join('\n') }
 else

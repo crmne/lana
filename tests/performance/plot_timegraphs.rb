@@ -46,11 +46,11 @@ unless options[:plotonly]
   projhome = "."
   MPIEXEC_HOSTS_FLAG = "-H"
   
-  idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}} if options[:same]
+  idle_servers = %x{#{projhome}/idle_servers.rb -s #{options[:servers].join(',')} -c #{options[:procs]} -u #{options[:user]}} if options[:same]
 
   (4..options[:procs]).step(2).each do |nprocs|
-    idlest_servers = %x{#{projhome}/idlest_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}} unless options[:same]
-    realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idlest_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}"
+    idle_servers = %x{#{projhome}/idle_servers.rb -s #{options[:servers].join(',')} -c #{nprocs} -u #{options[:user]}} unless options[:same]
+    realcommand = "#{MPIEXEC} #{MPIEXEC_NUMPROC_FLAG} #{nprocs} #{MPIEXEC_PREFLAGS} #{MPIEXEC_HOSTS_FLAG} #{idle_servers.chomp} #{options[:command]} #{MPIEXEC_POSTFLAGS} #{options[:cmdopts]}"
     realcommand.gsub!(/ +/, ' ') # remove double spaces
     logger.info "Running #{realcommand}..."
     result = %x{#{realcommand}}
@@ -68,23 +68,36 @@ def plot logs, image, logger
   plotcode << "set output '#{image}'\n"
   plotcode << "set xlabel 'Processes'\n"
   plotcode << "set ylabel 'Seconds'\n"
-  plotcode << "plot '#{first.file}' using 3:5 with linespoints title '#{first.graph}-#{first.bidi} #{first.nodes} nodes, #{first.edges} edges'"
+  plotcode << "plot '#{first.file}' using 3:5 with linespoints title '#{first.graph} n = #{first.nodes}, m = #{first.edges}'"
   logs[1..-1].each do |log|
-    plotcode << ", '#{log.file}' using 3:5 with linespoints title '#{log.graph}-#{log.bidi} #{log.nodes} nodes, #{log.edges} edges'"
+    plotcode << ", '#{log.file}' using 3:5 with linespoints title '#{log.graph} n = #{log.nodes}, m = #{log.edges}'"
   end
   plotcode << "\n"
 
   IO.popen("gnuplot", "w") { |pipe| pipe.puts plotcode }
 end
 
-Log = Struct.new :alg, :graph, :bidi, :nodes, :edges, :file
+Log = Struct.new :alg, :graph, :nodes, :edges, :file
+options[:datafiles].reject! {|x| x.match /Digraph/ }
 logs = options[:datafiles].map do |x|
   s = x.split('-')
-  b = s[1].gsub(/.*([DB]i)graph/, '\1')
   e = s[3].delete('e').to_i
   e = 27811816 if e == 28106778
   e = 55623632 if e == 56213556
-  Log.new s[0], s[1].gsub(/[DB]igraph/,''), b, s[2].delete('n').to_i, e, x
+  name = s[1].gsub(/[DB]igraph/,'')
+  case name
+  when "Csv"
+    if e == 692668
+      name = "FriendFeed Italy"
+    else
+      name = "FriendFeed Global"
+    end
+  when "ErdosRenyi"
+    name = "Erdos-Renyi"
+  when "SmallWorld"
+    name = "Small-World"
+  end
+  Log.new s[0], name, s[2].delete('n').to_i, e, x
 end
 
 logs.group_by(&:alg).each do |algo, l|
@@ -92,7 +105,9 @@ logs.group_by(&:alg).each do |algo, l|
     plot(ll, "#{algo}-#{graph}.pdf", logger)
   end
   l.group_by(&:nodes).each do |nodes, ll| # same nodes, different graph, different edges
-    plot(ll, "#{algo}-n#{nodes}.pdf", logger)
+    ll.group_by(&:graph).each do |graph, ll|
+      plot(ll, "#{algo}-n#{nodes}.pdf", logger) if (nodes == 282500 && graph == "Erdos-Renyi")
+    end
   end
   l.group_by(&:edges).each do |edges, ll| # same edges, different nodes, different graph
     plot(ll, "#{algo}-e#{edges}.pdf", logger)
