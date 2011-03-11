@@ -158,12 +158,12 @@ namespace ErdosRenyi
 
 };
 
-typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, SmallWorld::Node> SmallWorldDigraph;
+// typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, SmallWorld::Node> SmallWorldDigraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, SmallWorld::Node> SmallWorldBigraph;
-DECLARE_TYPE_NAME(SmallWorldDigraph);
+// DECLARE_TYPE_NAME(SmallWorldDigraph);
 DECLARE_TYPE_NAME(SmallWorldBigraph);
 
-typedef mpl::list<SmallWorldDigraph, SmallWorldBigraph> SmallWorldGraphTypes; // PageRank doesn't work with CSR graphs
+typedef mpl::list<SmallWorldBigraph> SmallWorldGraphTypes; // PageRank doesn't work with CSR graphs
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTest1, G, SmallWorldGraphTypes)
 {
@@ -213,12 +213,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SmallWorldScalabilityTestHuge, G, SmallWorldGraphT
     write_average_log(__ALGORITHM_NAME__, GET_TYPE_NAME(f.graph()), total_vertices(f.graph()), total_edges(f.graph()), events, f.is_root());
 }
 
-typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, ErdosRenyi::Node> ErdosRenyiDigraph;
+// typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, ErdosRenyi::Node> ErdosRenyiDigraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, ErdosRenyi::Node> ErdosRenyiBigraph;
-DECLARE_TYPE_NAME(ErdosRenyiDigraph);
+// DECLARE_TYPE_NAME(ErdosRenyiDigraph);
 DECLARE_TYPE_NAME(ErdosRenyiBigraph);
 
-typedef mpl::list<ErdosRenyiDigraph, ErdosRenyiBigraph> ErdosRenyiGraphTypes;
+typedef mpl::list<ErdosRenyiBigraph> ErdosRenyiGraphTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ErdosRenyiScalabilityTest1, G, ErdosRenyiGraphTypes)
 {
@@ -285,12 +285,12 @@ namespace boost
     }
 }
 
-typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Csv::Node> CsvDigraph;
+// typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, directedS, Csv::Node> CsvDigraph;
 typedef adjacency_list <vecS, distributedS<mpi_process_group, vecS>, bidirectionalS, Csv::Node> CsvBigraph;
-DECLARE_TYPE_NAME(CsvDigraph);
+// DECLARE_TYPE_NAME(CsvDigraph);
 DECLARE_TYPE_NAME(CsvBigraph);
 
-typedef mpl::list<CsvDigraph, CsvBigraph> CsvGraphTypes;
+typedef mpl::list<CsvBigraph> CsvGraphTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(CsvScalabilityTest, G, CsvGraphTypes)
 {
